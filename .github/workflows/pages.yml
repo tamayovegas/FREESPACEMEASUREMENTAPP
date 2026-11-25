@@ -2,7 +2,13 @@ name: Publish project site
 on:
   push:
     branches: [main]
-    paths: ['docs/**', 'README.md', 'preview-v10-diagnostics.png']
+    paths:
+      - .github/workflows/pages.yml
+      - docs/**
+      - Retrieval_method.html
+      - Variables_and_equations.html
+      - SymbolicTensors.html
+      - preview-v10-diagnostics.png
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,8 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Assemble static site
+        run: |
+          mkdir -p _site
+          cp docs/index.html Retrieval_method.html Variables_and_equations.html SymbolicTensors.html preview-v10-diagnostics.png _site/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MATLAB tools for quasi-optical simulation, scalar material retrieval, and acquisition planning.">
+  <title>Quasi-Optical 3D</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #152b34; background: #f1f6f6; }
+    body { margin: 0; }
+    header, main { padding: 2.5rem max(1.25rem, calc((100% - 67rem) / 2)); }
+    header { background: #102e39; color: #fff; }
+    h1 { font-size: clamp(2.35rem, 6vw, 4.5rem); line-height: 1.03; margin: 0 0 1rem; }
+    h2 { margin-top: 0; line-height: 1.2; }
+    p, li { line-height: 1.65; }
+    header p { max-width: 42rem; color: #d7ebef; font-size: 1.16rem; }
+    a { color: #096172; text-underline-offset: 0.2em; }
+    a:focus-visible { outline: 3px solid #bd5c0d; outline-offset: 4px; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+    nav a { display: inline-block; color: #fff; border: 1px solid #a4ced2; border-radius: 0.35rem; padding: 0.7rem 1rem; font-weight: 650; }
+    nav a:first-child { color: #102e39; background: #c5ebd7; border-color: #c5ebd7; }
+    nav a:focus-visible { outline-color: #fff; }
+    main { display: grid; gap: 2rem; }
+    figure { margin: 0; }
+    figure img { display: block; width: 100%; height: auto; border-radius: 0.45rem; }
+    figcaption { margin-top: 0.65rem; }
+    .columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.5rem; }
+    section { padding: 1.5rem; background: #fff; border: 1px solid #d6e2e3; border-radius: 0.45rem; }
+    section p:last-child, section ul:last-child { margin-bottom: 0; }
+    ul { padding-left: 1.2rem; }
+    pre { padding: 1rem; background: #eaf3f3; overflow: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Quasi-Optical 3D</h1>
+    <p>Explore free-space electromagnetic measurements with reflection and transmission simulation, scalar S-parameter retrieval, and symbolic acquisition planning.</p>
+    <nav aria-label="Project links">
+      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">View repository</a>
+      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip">Download source (ZIP)</a>
+      <a href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
+    </nav>
+  </header>
+  <main>
+    <figure>
+      <img src="preview-v10-diagnostics.png" alt="MATLAB app showing the quasi-optical measurement geometry, simulation plots, and illumination diagnostics">
+      <figcaption>Illumination diagnostics in the MATLAB simulation workspace.</figcaption>
+    </figure>
+    <div class="columns">
+      <section>
+        <h2>Run the MATLAB app</h2>
+        <p>Unzip the source, open the extracted folder in MATLAB, and run:</p>
+        <pre><code>QuasiOpticalBistatic3D</code></pre>
+        <p>The MATLAB Online link opens the entry file after sign-in. Run the same command there. MATLAB Online Basic compatibility has yet to be verified.</p>
+      </section>
+      <section>
+        <h2>Documentation and examples</h2>
+        <ul>
+          <li><a href="Retrieval_method.html">S-parameter retrieval guide</a></li>
+          <li><a href="Variables_and_equations.html">Variables and equations</a></li>
+          <li><a href="SymbolicTensors.html">Interactive symbolic tensor workspace</a></li>
+          <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/V10_validation.md">v10 validation record</a></li>
+        </ul>
+        <p>The app includes synthetic examples for homogeneous isotropic slabs. Experimental accuracy has yet to be validated against reference measurements.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

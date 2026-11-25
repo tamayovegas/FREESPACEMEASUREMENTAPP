@@ -23,7 +23,7 @@ GitHub repository hosting and Pages can be used at no charge for eligible public
 ## Account-side release checklist
 
 - [ ] Create/confirm GitHub account and public repository; review included content and license.
-- [ ] Enable Pages and publish the documentation site from the chosen branch/folder.
+- [ ] In Settings → Pages, select GitHub Actions as the source. The Publish project site workflow builds the static site from `main`. Use Run workflow for a manual redeploy.
 - [ ] Create a versioned release and verify its source archive downloads and opens.
 - [ ] Sign in to MATLAB Central, install/authorize the MATLAB and Simulink GitHub App, select this repository, and publish the File Exchange listing.
 - [ ] Test opening the released source in MATLAB Online with a Basic account and run `QuasiOpticalBistatic3D`.

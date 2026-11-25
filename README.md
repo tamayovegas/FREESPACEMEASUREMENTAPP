@@ -2,9 +2,9 @@
 
 ## Install and run
 
-**MATLAB Online launch link (after this folder is published as a repository):** [Open this project in MATLAB Online](https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&file=QuasiOpticalBistatic3D.m)
+[Project website](https://tamayovegas.github.io/QuasiOpticalBistatic3D/) · [Download source ZIP](https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip) · [Open in MATLAB Online](https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&file=QuasiOpticalBistatic3D.m)
 
-This assumes the GitHub repository will be named `QuasiOpticalBistatic3D` under `tamayovegas`. If you choose a different repository name, update the URL. The link clones the repository into MATLAB Online and opens the entry point; users still need an eligible MATLAB Online session and access to the required products.
+The MATLAB Online link clones the repository and opens the entry file after sign-in. Run the command below in MATLAB Online to start the app.
 
 Download or clone this folder, add it to the MATLAB path, and run `QuasiOpticalBistatic3D`. Keep the `QuasiOptical*.m` files, three HTML guides, and CSV templates together. For the symbolic tensor workspace alone, open `SymbolicTensors.html` in a modern browser.
 

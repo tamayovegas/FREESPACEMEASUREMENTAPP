@@ -9,8 +9,8 @@
 body { margin: 0; }
 a { color: #0b596b; text-underline-offset: .2em; }
 :focus-visible { outline: 3px solid #9e4715; outline-offset: 4px; }
-h1, h2, h3, p, figure { margin: 0; }
-h1, h2, h3 { line-height: 1.15; }
+h1, h2, h3, h4, p, figure { margin: 0; }
+h1, h2, h3, h4 { line-height: 1.15; }
 h1 { font-size: clamp(2.2rem, 4.3vw, 4.4rem); letter-spacing: -.04em; }
 h2 { font-size: clamp(1.65rem, 3vw, 2.5rem); letter-spacing: -.025em; }
 h3 { font-size: 1.35rem; }
@@ -50,11 +50,25 @@ img { display: block; width: 100%; height: auto; background: #fff; }
 .workflow li::marker { color: #0b596b; font-weight: 750; }
 .workflow strong { display: block; }
 .model-note { padding: .8rem 1rem; border-left: 3px solid #237477; background: #e6f0f0; }
-.science-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.science-links { display: flex; flex-wrap: wrap; gap: .45rem 1.25rem; margin-top: 1rem; }
+.science-links a { font-weight: 650; padding-block: .2rem; }
+.science-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 61rem; margin-top: 1.2rem; }
 .science-card { padding: clamp(1rem, 2.5vw, 1.5rem); border: 1px solid #d5dfe0; border-radius: .5rem; background: #fff; }
 .science-card > p, .science-block > p { margin-top: .75rem; }
-.science-block { margin-top: 1.75rem; }
+.science-block { margin-top: clamp(2rem, 4vw, 3.25rem); scroll-margin-top: 1rem; }
+.science-block > p, .science-block > aside, .science-list { max-width: 82ch; }
+.science-block > aside { margin-top: 1rem; }
+.science-list { padding-left: 1.35rem; }
+.science-list li + li { margin-top: .45rem; }
+.science-figure { max-width: 61rem; margin-top: 1.25rem; }
+.science-figure img { border: 1px solid #b7c8cd; border-radius: .5rem; }
+.science-figure figcaption { margin-top: .55rem; color: #3b5360; font-size: .9rem; }
+.science-figure > a { display: block; text-align: right; font-size: .875rem; }
+.science-figure > a span { display: inline-block; padding-top: .35rem; }
+.formula { display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; max-width: 61rem; margin-top: .9rem; padding: .6rem .8rem; border-radius: .35rem; background: #e6f0f0; }
+.formula span { max-width: 100%; overflow-wrap: anywhere; }
 .equations { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.equations, .methods { max-width: 61rem; }
 .equations p { flex: 1 1 8rem; padding: .45rem .65rem; background: #e6f0f0; border-radius: .3rem; }
 .equations strong, .equations span { display: block; }
 .equations span, .equation-note { font-size: .9rem; }

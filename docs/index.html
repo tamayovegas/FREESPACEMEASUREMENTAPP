@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Plan free-space material measurements in MATLAB. Compare straight-through transmission and bistatic reflection, with and without focusing lenses.">
   <title>Free Space Measurements | Microwave material characterization</title>
-  <link rel="stylesheet" href="site.css?v=free-space-measurements">
+  <link rel="stylesheet" href="site.css?v=measurement-guide">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -26,8 +26,8 @@
           <h1 id="main" tabindex="-1">Free Space Measurements</h1>
           <p class="intro">Plan how a microwave beam reaches a sample. Compare transmission and reflection, then use calibrated S-parameters to retrieve material properties in MATLAB.</p>
           <div class="actions">
-            <a class="button primary" href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
-            <a class="button secondary" href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip">Download ZIP</a>
+            <a class="button primary" href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/FREESPACEMEASUREMENTAPP&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
+            <a class="button secondary" href="https://github.com/tamayovegas/FREESPACEMEASUREMENTAPP/archive/refs/heads/main.zip">Download ZIP</a>
           </div>
           <code class="command">QuasiOpticalBistatic3D</code>
           <p class="start-note">Run this command from the project folder. MATLAB Online requires sign-in. Basic compatibility is unverified.</p>
@@ -99,29 +99,105 @@
 
     <section class="section" id="science" aria-labelledby="science-heading">
       <h2 id="science-heading">The physics of a free-space measurement</h2>
-      <div class="science-grid">
-        <article class="science-card">
-          <h3>What the instrument measures</h3>
-          <p>A vector network analyzer (VNA) launches a microwave signal and measures complex ratios of outgoing to incident waves. Each S-parameter records both amplitude and phase as a function of frequency.</p>
-          <p>Calibrate the fixture and, where needed, de-embed the remaining path to refer the data to the slab faces. This accounts for effects such as propagation delay between the VNA ports and the sample. Use time gating before import if delayed echoes can be separated from the main response.</p>
-          <p>With two separate horns in a bistatic reflection setup, the reflected path can appear as raw VNA S<sub>21</sub>. After calibration and channel mapping, that measurement supplies the sample reflection <var>r</var>. A through-path measurement supplies sample transmission <var>t</var>. The app reads the sample reflection and transmission as S<sub>11</sub> and S<sub>21</sub>, respectively.</p>
-        </article>
-        <article class="science-card">
-          <h3>How the slab changes the wave</h3>
-          <p>Complex relative permittivity ε<sub>r</sub> describes the electric response. Complex relative permeability μ<sub>r</sub> describes the magnetic response. The imaginary terms represent loss under the app’s time convention, e<sup>+jωt</sup>. For ε<sub>r</sub> = ε′ − jε″, the dielectric loss tangent is tan δ = ε″/ε′. Conductivity can contribute to the effective electric loss inferred from the scattering data.</p>
-          <p>Impedance mismatch at the air–slab interfaces produces reflection. Within the slab, propagation changes phase and attenuates the wave in a lossy material. Repeated internal reflections also change the measured response. At oblique incidence, the interface responses depend on polarization.</p>
-          <div class="equations" aria-label="Power fractions for the app’s slab model">
-            <p><strong><var>R</var> = |<var>r</var>|<sup>2</sup></strong><span>Reflected power fraction</span></p>
-            <p><strong><var>T</var> = |<var>t</var>|<sup>2</sup></strong><span>Transmitted power fraction</span></p>
-            <p><strong><var>A</var> = 1 − <var>R</var> − <var>T</var></strong><span>Absorbed power fraction</span></p>
-          </div>
-          <p class="equation-note">Here <var>r</var> and <var>t</var> are the complex slab reflection and transmission amplitudes for the same polarization in air on both sides. The fractions refer to incident power in the plane-wave slab model.</p>
-        </article>
-      </div>
+      <p class="section-intro">Follow the signal from the horns to the slab faces, then from the calibrated complex measurements to the estimated material properties.</p>
+      <nav class="science-links" aria-label="Science topics">
+        <a href="#measurement-paths">Measurement paths</a>
+        <a href="#calibration">TRL calibration</a>
+        <a href="#illumination">Illumination</a>
+        <a href="#slab-physics">Slab equations</a>
+        <a href="#retrieval">Retrieval</a>
+        <a href="#tensors">Tensors and planning</a>
+      </nav>
 
-      <div class="science-block">
-        <h3>Retrieve the material properties</h3>
-        <p>The app uses calibrated complex reflection and transmission and the measured thickness normal to the slab faces. Each imported spectrum represents one fixed incidence angle and one polarization.</p>
+      <section class="science-block" id="measurement-paths" aria-labelledby="paths-heading">
+        <h3 id="paths-heading">Measurement paths and VNA channels</h3>
+        <p>A vector network analyzer (VNA) measures ratios of outgoing to incident waves. For example, VNA S<sub>21</sub> is the complex wave received at port 2 divided by the incident wave at port 1, with no excitation from port 2. Each complex ratio carries amplitude and phase over frequency.</p>
+        <div class="science-grid">
+          <article class="science-card">
+            <h4>Straight-through transmission</h4>
+            <p>Separate transmitting and receiving horns face each other with the sample between them. Calibrated through-path data supply the specimen transmission coefficient <var>t</var>.</p>
+          </article>
+          <article class="science-card">
+            <h4>Fixed-angle bistatic reflection</h4>
+            <p>Separate Tx and Rx horns are on the incident side. At a fixed orientation, position Rx in the specular direction. A reflection that travels from port 1’s horn to port 2’s horn appears as raw VNA S<sub>21</sub>. After calibration and channel mapping it supplies specimen reflection <var>r</var>.</p>
+          </article>
+        </div>
+        <aside class="model-note"><strong>Monostatic context.</strong> A shared antenna sends and receives the returning wave. A one-port configuration can record that return in raw VNA S<sub>11</sub>, together with antenna mismatch and fixture echoes. The app’s geometry views model separate Tx and Rx paths. Its scalar inverse uses a matched specimen reflection and transmission pair.</aside>
+        <figure class="science-figure">
+          <a href="assets/measurement-paths.png"><img src="assets/measurement-paths.png" width="1240" height="936" loading="lazy" alt="Three schematics show Tx and Rx on opposite sides for transmission, separate horns on the same side for bistatic specular reflection, and one shared aperture for monostatic reflection."><span>View full size</span></a>
+          <figcaption>The orange arrow follows the received wave. The dashed lines indicate the specimen faces. These paths are schematic.</figcaption>
+        </figure>
+      </section>
+
+      <section class="science-block" id="calibration" aria-labelledby="calibration-heading">
+        <h3 id="calibration-heading">TRL calibration and the slab reference planes</h3>
+        <p>Establish the fixture response in the lab and de-embed any remaining air path to the slab faces. This removes the corresponding propagation delay and prevents fixture effects from being interpreted as slab phase. Use time gating before import when echoes are separated from the main response in time.</p>
+        <ul class="science-list">
+          <li><strong>Thru.</strong> Measure the empty route between the horns to establish a reference. Put the slab in place for its transmission measurement.</li>
+          <li><strong>Reflect.</strong> Present a high-reflection standard to the ports. The original study used a metal plate as a calibration standard.</li>
+          <li><strong>Line.</strong> Measure another uniform air path with a different electrical length to provide a distinct phase delay.</li>
+        </ul>
+        <p>Map the calibrated specimen data to the app’s input convention, S<sub>11</sub> = <var>r</var> and S<sub>21</sub> = <var>t</var>. Both must describe the same thickness, angle and polarization at the same frequencies. The original paper also used a metal plate <em>behind the specimen</em> for its reflection-only extraction. That is a separate measurement from the bare calibration plate and from the app’s air–slab–air model.</p>
+        <figure class="science-figure">
+          <a href="assets/trl-standards.png"><img src="assets/trl-standards.png" width="1240" height="822" loading="lazy" alt="TRL diagrams show an empty path between two horns, a metal reflect reference, and a longer air path for the line standard."><span>View full size</span></a>
+          <figcaption>Conceptual free-space TRL standards. Choose the calibration fixture and standards for the operating band. See the original IEEE paper and NIST Technical Note 1536 in <a href="#references">References</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section class="science-block" id="illumination" aria-labelledby="illumination-heading">
+        <h3 id="illumination-heading">Plan illumination with frequency, distance, and lenses</h3>
+        <p>Use <strong>Simulation → Geometry</strong> to set the low and high endpoints of the simulation sweeps. The center frequency sets the geometry, beam plots, and point results. Enter the largest span of the horn aperture, or select a nominal 15, 20, or 25 dBi estimate if the physical dimension is unknown. The estimate assumes 50% efficiency and holds the resulting aperture fixed across the sweep.</p>
+        <div class="formula" aria-label="Free-space wavelength and bare-horn field region estimates">
+          <span>λ<sub>0</sub> = <var>c</var>/<var>f</var></span>
+          <span><var>R</var><sub>reactive</sub> ≈ 0.62√(<var>D</var><sup>3</sup>/λ<sub>0</sub>)</span>
+          <span><var>R</var><sub>FF</sub> ≈ 2<var>D</var><sup>2</sup>/λ<sub>0</sub></span>
+        </div>
+        <p>Here <var>c</var> is the speed of light, <var>f</var> is frequency, and <var>D</var> is the aperture span. The app displays reactive near field, radiating near field, and far field as bare-horn references. The horn layout angle sets the nominal geometry. Yaw, pitch, and roll rotate the sample normal, changing actual incidence and the specular direction. The receiver offset shows how far the chosen Rx direction departs from that path.</p>
+        <div class="formula" aria-label="Gaussian beam radius and intensity">
+          <span><var>w</var>(<var>z</var>) = <var>w</var><sub>0</sub>√[1 + (<var>z</var>/<var>z</var><sub>R</sub>)<sup>2</sup>]</span>
+          <span><var>z</var><sub>R</sub> = π<var>w</var><sub>0</sub><sup>2</sup>/λ<sub>0</sub></span>
+          <span><var>I</var>(ρ)/<var>I</var>(0) = e<sup>−2ρ²/<var>w</var>²</sup></span>
+        </div>
+        <p>In the paraxial model, <var>w</var> is the 1/e<sup>2</sup> intensity radius, <var>z</var> is distance from the beam waist, <var>z</var><sub>R</sub> is the Rayleigh range, and ρ is distance from the beam axis. The bare launch waist is modeled as <var>w</var><sub>0</sub> = 0.425<var>D</var>. An ideal thin lens before the sample changes the waist and wavefront curvature. Lens position and focal length therefore change how the beam fits the rotated specimen. Bare-horn field boundaries stay the same.</p>
+        <p>Intersecting that beam with a tilted sample stretches its footprint along the tilt. The illumination table estimates the strongest field anywhere on the sample edge and the largest phase deviation from a plane tangent to the wavefront at the center. At a transverse radius ρ, the local quadratic phase deviation is about πρ<sup>2</sup>/(λ<sub>0</sub>|<var>R</var><sub>wave</sub>|), where <var>R</var><sub>wave</sub> is the radius of curvature.</p>
+        <p class="model-note"><strong>Worked setup.</strong> At 10 GHz, λ<sub>0</sub> ≈ 30 mm. A 12 cm aperture gives <var>R</var><sub>FF</sub> ≈ 0.96 m. For a 50 cm × 50 cm specimen at 1.2 m and 30° incidence, the modeled beam radius decreases from 23.0 cm to 15.1 cm with a lens 0.20 m from each horn and focal length 0.35 m. The diagnostics can still flag substantial phase variation or edge illumination in a focused setup.</p>
+        <figure class="science-figure">
+          <a href="assets/illumination-diagnostics.png"><img src="assets/illumination-diagnostics.png" width="1580" height="917" loading="lazy" alt="MATLAB shows the worked geometry, sample footprint, bare-horn field-region boundary, focused beam radius, and illumination diagnostics."><span>View full size</span></a>
+          <figcaption>Native MATLAB capture. The lower table reports wavefront curvature, phase variation, and edge-field guidance for the simulated setup. See <a href="Variables_and_equations.html#diagnostics">Gaussian illumination diagnostics</a> for the approximations.</figcaption>
+        </figure>
+      </section>
+
+      <section class="science-block" id="slab-physics" aria-labelledby="slab-heading">
+        <h3 id="slab-heading">From material properties to reflection and transmission</h3>
+        <p>Relative permittivity ε<sub>r</sub> describes the electric response and relative permeability μ<sub>r</sub> the magnetic response. With the app’s e<sup>+jωt</sup> convention, the passive loss terms ε″ and μ″ are nonnegative. The dielectric loss tangent is ε″/ε′ for the dielectric loss term. Conductivity σ adds electric loss to the effective permittivity, so a fitted electric loss can include conduction. Here ε<sub>0</sub> is the vacuum permittivity and ω is angular frequency.</p>
+        <div class="formula" aria-label="Complex constitutive properties including electric conduction">
+          <span>ε<sub>r,eff</sub> = ε′ − j[ε″ + σ/(ωε<sub>0</sub>)]</span>
+          <span>μ<sub>r</sub> = μ′ − jμ″</span>
+          <span>ω = 2π<var>f</var></span>
+        </div>
+        <p>An impedance mismatch sets the one-interface reflection Γ. Oblique TE and TM use different normalized impedances <var>z</var><sub>p</sub>. For one pass across normal thickness <var>d</var>, propagation changes phase and amplitude through <var>P</var>. Here <var>q</var><sub>s</sub> = <var>k</var><sub>z</sub>/<var>k</var><sub>0</sub> is normalized slab propagation normal to the faces, θ is the angle from the sample normal, and <var>k</var><sub>0</sub> = 2π/λ<sub>0</sub>.</p>
+        <div class="formula" aria-label="Oblique propagation, one-pass propagation, and single-interface reflection">
+          <span><var>q</var><sub>s</sub><sup>2</sup> = ε<sub>r,eff</sub>μ<sub>r</sub> − sin<sup>2</sup>θ</span>
+          <span><var>P</var> = e<sup>−j<var>k</var><sub>0</sub><var>q</var><sub>s</sub><var>d</var></sup></span>
+          <span>Γ = (<var>z</var><sub>p</sub> − 1)/(<var>z</var><sub>p</sub> + 1)</span>
+        </div>
+        <p>Summing the repeated internal reflections gives the complex sample-face amplitudes <var>r</var> and <var>t</var> for a homogeneous plane-wave slab with air on both sides.</p>
+        <div class="formula" aria-label="Complex reflection and transmission including internal reflections">
+          <span><var>r</var> = Γ(1 − <var>P</var><sup>2</sup>)/(1 − Γ<sup>2</sup><var>P</var><sup>2</sup>)</span>
+          <span><var>t</var> = <var>P</var>(1 − Γ<sup>2</sup>)/(1 − Γ<sup>2</sup><var>P</var><sup>2</sup>)</span>
+        </div>
+        <div class="equations" aria-label="Power fractions for identical air modes on both sides">
+          <p><strong><var>R</var> = |<var>r</var>|<sup>2</sup></strong><span>Reflected slab power</span></p>
+          <p><strong><var>T</var> = |<var>t</var>|<sup>2</sup></strong><span>Transmitted slab power</span></p>
+          <p><strong><var>A</var> = 1 − <var>R</var> − <var>T</var></strong><span>Absorbed slab power</span></p>
+        </div>
+        <p>Each power fraction is relative to incident power on the slab. The app estimates the intercepted share of the Gaussian beam separately. Any beam power that misses the specimen is spillover. For mixed linear polarization the slab power response uses cos<sup>2</sup>ψ for TE and sin<sup>2</sup>ψ for TM, where ψ is the electric-field angle from local TE. See the <a href="Retrieval_method.html#oblique">polarization-specific impedances</a> for the oblique equations.</p>
+        <p>Return loss is −10 log<sub>10</sub>(<var>R</var>) and insertion loss is −10 log<sub>10</sub>(<var>T</var>), both in dB. The reflection view also gives an approximate radar cross section for a large uniformly illuminated plate in the specular direction, scaled by slab reflectance. Receiver coupling and off-specular scattering require a separate model. See the <a href="Variables_and_equations.html#rcs">specular plate approximation</a>.</p>
+      </section>
+
+      <section class="science-block" id="retrieval" aria-labelledby="retrieval-heading">
+        <h3 id="retrieval-heading">Retrieve scalar material properties</h3>
+        <p>Import complex CSV or Touchstone data, or enter one complex reflection and transmission pair by hand. Each spectrum needs a known normal thickness and one fixed incidence and polarization. The optional four-coefficient input uses the symmetric averages of S<sub>11</sub> with S<sub>22</sub> and S<sub>21</sub> with S<sub>12</sub>, then checks the reconstruction against all four original channels.</p>
         <table class="methods">
           <caption>Retrieval methods implemented in the app</caption>
           <thead>
@@ -133,19 +209,39 @@
             <tr><th scope="row">New non-iterative</th><td>Normal</td><td>Retrieves ε<sub>r</sub> from propagation, with μ<sub>r</sub> = 1 assumed</td></tr>
           </tbody>
         </table>
-        <p>Different propagation phases within the slab can produce the same measured phase, which repeats every 2π. Use independent knowledge of the sample or its expected dispersion to choose a physically plausible branch. Compare the reconstructed complex channels with the input to check the fit. Different branches can reproduce the same data.</p>
-      </div>
+        <p>Measured phase repeats every 2π. For the direct methods, justify the initial phase branch with independent information about the sample. For the iterative method, use a physically plausible initial permittivity. Reconstruction compares the fitted complex channels with the inputs. Different branches can fit the same data, and weak transmission or near half-wave resonances can make retrieval unreliable.</p>
+        <p>To try the workflow, choose the synthetic 6 GHz, 45° benchmark with a 10 mm slab, known ε<sub>r</sub> = 4 − j0.08, and μ<sub>r</sub> = 1. The broadband option instead generates complex TE and TM channels from the current simulation material and frequency band.</p>
+        <figure class="science-figure">
+          <a href="assets/synthetic-nrw-reconstruction.png"><img src="assets/synthetic-nrw-reconstruction.png" width="1580" height="917" loading="lazy" alt="MATLAB overlays the real and imaginary parts of the synthetic TE and TM reflection and transmission data with the NRW reconstructions over frequency."><span>View full size</span></a>
+          <figcaption>Native MATLAB capture of the 2–25 GHz synthetic broadband example. The model curves overlay the generated inputs for both polarizations. This checks the inverse and forward models with known inputs.</figcaption>
+        </figure>
+      </section>
 
-      <div class="science-block">
-        <h3>What affects confidence</h3>
+      <section class="science-block" id="tensors" aria-labelledby="tensors-heading">
+        <h3 id="tensors-heading">Isotropic simulation and symbolic anisotropic planning</h3>
+        <p>An isotropic material has the same constitutive response in every direction. An anisotropic material needs tensors whose components can differ with direction. The symbolic workspace lets you choose general, reciprocal, diagonal material axes, or isotropic assumptions. Rotate components from the material frame to the lab frame with the sample rotation matrix <strong>Q</strong>.</p>
+        <div class="formula" aria-label="Isotropic permittivity and material-to-lab tensor rotation">
+          <span><strong>ε</strong><sub>r</sub> = ε<sub>r</sub><strong>I</strong></span>
+          <span><strong>T</strong><sub>lab</sub> = <strong>Q</strong><strong>T</strong><sub>material</sub><strong>Q</strong><sup>T</sup></span>
+        </div>
+        <p>Plan the geometry with incidence angles, azimuths, known specimen orientations, polarization channels, and frequencies. Multiply those counts by the selected reflection/transmission blocks to obtain the number of scheduled complex samples. For example, 7 incidence angles × 2 azimuths × 1 orientation gives 14 geometries. With two co-polarized channels and both reflection and transmission, that is 56 complex traces, or 56 complex samples when each trace has one frequency. These are acquisition counts. Multiple settings can still yield dependent equations.</p>
+        <p>Only the scalar isotropic inverse is numerical. TE/TM agreement on the same frequency grid, incidence, and thickness supports a consistency check. Disagreement can also result from alignment, polarization, calibration, or finite-beam effects. In an incidence sweep, reacquire the matching specular and transmitted paths at each incidence. An off-specular receiver observation arc samples scattering at fixed illumination and cannot supply the paired slab inputs.</p>
+        <figure class="science-figure">
+          <a href="assets/symbolic-tensor-planner.png"><img src="assets/symbolic-tensor-planner.png" width="1580" height="917" loading="lazy" alt="MATLAB symbolic measurement planner shows 7 angles, 2 azimuths, 2 co-polarized channels, 14 geometries, and 56 traces."><span>View full size</span></a>
+          <figcaption>Native MATLAB capture of the geometry-linked symbolic planner. Use it to schedule measurements, choose whether to include cross-polarized channels, and export matrices with the plan. <a href="SymbolicTensors.html">Open the symbolic workspace</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section class="science-block" aria-labelledby="confidence-heading">
+        <h3 id="confidence-heading">What affects confidence</h3>
         <ul class="confidence">
           <li><strong>Alignment and beam footprint.</strong> Place the receiver on the through or specular path. Use the footprint to check whether the illuminated beam approaches the sample edges, where spillover and diffraction can affect the measurement.</li>
           <li><strong>Unwanted reflections.</strong> The horns, fixture, and room can add echoes. Calibration and, when appropriate, time gating are laboratory steps performed before importing data.</li>
           <li><strong>Weak transmission.</strong> Near the noise floor, uncertainty in transmitted amplitude and phase can make the inverse calculation unreliable.</li>
           <li><strong>Thickness uncertainty.</strong> The inferred propagation constant depends on thickness. Measure it independently and include its uncertainty when reporting material properties.</li>
         </ul>
-        <p class="model-note">The gallery illustrates simulated illumination and geometry. The software has been checked with synthetic data. Experimental accuracy against calibrated reference measurements remains unverified.</p>
-      </div>
+        <p class="model-note">The geometry and illumination are simulations, and the retrieval examples use generated data. The diagnostic phase and edge-field thresholds are engineering guidance. Experimental accuracy against calibrated reference measurements remains unverified.</p>
+      </section>
     </section>
 
     <section class="section" id="references" aria-labelledby="references-heading">
@@ -162,16 +258,16 @@
         <li><a href="Retrieval_method.html">S-parameter retrieval guide</a></li>
         <li><a href="Variables_and_equations.html">Variables and equations</a></li>
         <li><a href="SymbolicTensors.html">Interactive symbolic acquisition planner</a></li>
-        <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/docs/TECHNICAL_GUIDE.md">Technical guide and version notes</a></li>
-        <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/V10_validation.md">Validation record</a></li>
+        <li><a href="https://github.com/tamayovegas/FREESPACEMEASUREMENTAPP/blob/main/docs/TECHNICAL_GUIDE.md">Technical guide and version notes</a></li>
+        <li><a href="https://github.com/tamayovegas/FREESPACEMEASUREMENTAPP/blob/main/V10_validation.md">Validation record</a></li>
       </ul>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">Free Space Measurements on GitHub</a>
-      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/LICENSE">MIT license</a>
+      <a href="https://github.com/tamayovegas/FREESPACEMEASUREMENTAPP">Free Space Measurements on GitHub</a>
+      <a href="https://github.com/tamayovegas/FREESPACEMEASUREMENTAPP/blob/main/LICENSE">MIT license</a>
     </div>
   </footer>
 </body>

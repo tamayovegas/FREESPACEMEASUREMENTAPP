@@ -136,7 +136,7 @@ Use **Variables & equations** below the plots, with its expanded-window button, 
 
 ## Validation
 
-From the repository root, run the following in MATLAB. Smoke checks write previews to temporary folders. To regenerate the four published screenshots, run `captureMeasurementViews` after adding the tests folder to the path.
+From the repository root, run the following in MATLAB. Smoke checks write previews to temporary folders. After adding the tests folder to the path, run `captureMeasurementViews` to regenerate the four setup views and `captureScienceViews` to reproduce the illumination, retrieval, and planner figures. To redraw the measurement paths and TRL diagrams, run `python3 docs/generate_measurement_diagrams.py` with Pillow and the fonts named in the script.
 
 ```matlab
 addpath(fullfile(pwd,'tests'));
@@ -154,7 +154,7 @@ smokeQuasiOpticalDiagnostics
 
 The original 27 numerical tests cover geometry, field regions, Gaussian interception, PEC/vacuum limits, zero thickness, quarter/half-wave interference, matched magnetic absorption, equivalent conduction/dielectric losses, thick-metal stability, Brewster/critical angles, polarization mixing and passive energy conservation. The symbolic identity checks use internal numerical substitutions to verify tensor rotation, the anisotropic modal Maxwell equations, the isotropic limit against the existing solver, scalar retrieval reconstruction and specular angle geometry. They do not assign values to the symbolic UI. The UI smoke test exercises the new symbolic workspace and expanded window, plus all presets, all material inputs, both geometries, plot switching, sample rotation, lenses, exports and the guide.
 
-The optional `node tests/testSymbolicTensors.cjs` check runs the actual HTML controller in an isolated DOM stub, covering the 27 matrix entries, symmetry/frame choices, component selection, topic switching and offline dependencies. The [setup gallery](https://tamayovegas.github.io/QuasiOpticalBistatic3D/#setups) shows native MATLAB exports. Only this developer check requires Node.
+The optional `node tests/testSymbolicTensors.cjs` check runs the actual HTML controller in an isolated DOM stub, covering the 27 matrix entries, symmetry/frame choices, component selection, topic switching and offline dependencies. The [setup gallery](https://tamayovegas.github.io/FREESPACEMEASUREMENTAPP/#setups) shows native MATLAB exports. Only this developer check requires Node.
 
 The v5 tests add export naming/completeness/metadata checks, acquisition-count and eligibility checks, and 14 retrieval/import checks, including independent synthetic forward/inverse round trips, magnetic/lossy/matched slabs, branch continuity, singular/opaque/nonpassive cases, RI/MA/DB CSV/Touchstone and malformed inputs. `smokeQuasiOpticalV5` checks setup synchronization, graph and matrix bundles, the GUI retrieval round trip and invalid-input handling. Synthetic test data are explicitly labeled and never presented as measured data.
 

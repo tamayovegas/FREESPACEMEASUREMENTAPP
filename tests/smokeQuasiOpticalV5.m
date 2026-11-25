@@ -62,7 +62,7 @@ function smokeQuasiOpticalV5
     tensors=findobj(fig,'Tag','symbolicTensorTab'); tensors.Parent.SelectedTab=tensors;
     tensors.Parent.SelectionChangedFcn(tensors.Parent,[]);
     drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v5-tensors.png'));
-    renderPlannerPreview(html);
+    renderPlannerPreview(html,previewFolder);
     fprintf('V5 UI integration passed: setup sync, live angles, graph bundles, sweep counts, matrix export, scalar NRW UI and invalid-input guards.\n');
 end
 
@@ -70,7 +70,7 @@ function setField(fig,tag,value)
     field=findobj(fig,'Tag',tag); field.Value=value;
 end
 
-function renderPlannerPreview(linkedHTML)
+function renderPlannerPreview(linkedHTML,previewFolder)
     source=fileread(linkedHTML.HTMLSource);
     source=strrep(source,'id="tensors" class="section"','id="tensors" class="section" hidden');
     source=strrep(source,'id="plan" class="section" hidden','id="plan" class="section"');

@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV5
 % Integration test: linked setup, acquisition counts, export bundle and NRW UI.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D; cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     html=findobj(fig,'Tag','symbolicTensorHTML');
     assert(strcmp(html.Data.action,'sync'));
@@ -49,17 +51,17 @@ function smokeQuasiOpticalV5
     assert(isempty(api.getResult()) && strcmp(findobj(fig,'Tag','exportRetrieval').Enable,'off'));
     thicknessField.Value=d.thicknessMM; api.calculate(); result=api.getResult();
     assert(~isempty(result) && all(result.valid));
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v5-retrieval.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v5-retrieval.png'));
     setField(fig,'retrievalAngleDeg',90); api.calculate(); assert(isempty(api.getResult()));
     assert(isempty(findobj(fig,'Tag','retrievalResults').Data));
     setField(fig,'retrievalAngleDeg',0); setField(fig,'retrievalCalibrated',false);
     api.calculate(); assert(isempty(api.getResult()));
     guideButton=findobj(fig,'Tag','openRetrievalGuide'); guideButton.ButtonPushedFcn(guideButton,[]);
     guideFigure=findall(groot,'Type','figure','Tag','QuasiOpticalRetrievalGuide');
-    drawnow; pause(3); exportapp(guideFigure,fullfile(pwd,'preview-v5-method.png')); close(guideFigure);
+    drawnow; pause(3); exportapp(guideFigure,fullfile(previewFolder,'preview-v5-method.png')); close(guideFigure);
     tensors=findobj(fig,'Tag','symbolicTensorTab'); tensors.Parent.SelectedTab=tensors;
     tensors.Parent.SelectionChangedFcn(tensors.Parent,[]);
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v5-tensors.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v5-tensors.png'));
     renderPlannerPreview(html);
     fprintf('V5 UI integration passed: setup sync, live angles, graph bundles, sweep counts, matrix export, scalar NRW UI and invalid-input guards.\n');
 end
@@ -79,5 +81,5 @@ function renderPlannerPreview(linkedHTML)
     preview=uifigure('Position',[70 40 1380 1050]); cleanupFigure=onCleanup(@() close(preview)); %#ok<NASGU>
     grid=uigridlayout(preview,[1 1]); grid.Padding=[0 0 0 0];
     html=uihtml(grid,'HTMLSource',temporary); html.Data=linkedHTML.Data;
-    drawnow; pause(4); exportapp(preview,fullfile(pwd,'preview-v5-planner.png'));
+    drawnow; pause(4); exportapp(preview,fullfile(previewFolder,'preview-v5-planner.png'));
 end

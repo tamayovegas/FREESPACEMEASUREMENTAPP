@@ -1,9 +1,9 @@
 // Isolated tests of the HTML's actual controller, without a browser or network.
-// Run: node testSymbolicTensors.cjs
+// Run: node tests/testSymbolicTensors.cjs
 const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const source = fs.readFileSync(__dirname + '/SymbolicTensors.html', 'utf8');
+const source = fs.readFileSync(__dirname + '/../SymbolicTensors.html', 'utf8');
 class Element {
   constructor(tag) { this.tagName=tag; this.children=[]; this.listeners={}; this.dataset={}; this.attributes={}; this.hidden=false; this.className=''; this.firstChild={textContent:''}; }
   set innerHTML(value) { this.html=value; this.children=[]; }

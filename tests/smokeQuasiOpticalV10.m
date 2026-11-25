@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV10
 % Integrated synthetic loading, TE/TM strict matching, exports and invalidation.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D; cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     tab=findobj(fig,'Tag','retrievalTab'); tab.Parent.SelectedTab=tab; tab.Parent.SelectionChangedFcn(tab.Parent,[]);
     panel=findobj(fig,'Tag','retrievalPanel'); api=panel.UserData;
@@ -13,13 +15,13 @@ function smokeQuasiOpticalV10
     assert(params.Value(params.Parameter=="Incidence")=="45");
     assert(contains(findobj(fig,'Tag','retrievalSourceLabel').Text,'SYNTHETIC'));
     tabs=findobj(fig,'Tag','retrievalDetailTabs'); tabs.SelectedTab=findobj(fig,'Tag','retrievalConsistencyTab');
-    drawnow; pause(2); exportapp(fig,fullfile(pwd,'preview-v10-consistency.png'));
+    drawnow; pause(2); exportapp(fig,fullfile(previewFolder,'preview-v10-consistency.png'));
     tabs.SelectedTab=findobj(fig,'Tag','retrievalReconstructionTab');
-    drawnow; pause(2); exportapp(fig,fullfile(pwd,'preview-v10-reconstruction.png'));
+    drawnow; pause(2); exportapp(fig,fullfile(previewFolder,'preview-v10-reconstruction.png'));
     folder=tempname; mkdir(folder); folderCleanup=onCleanup(@() rmdir(folder,'s')); %#ok<NASGU>
     exported=api.exportTo(fullfile(folder,'ObliqueBenchmark.png'));
-    copyfile(exported.parametersImage,fullfile(tempdir,'quasi-v10-export_parameters.png'));
-    copyfile(exported.image,fullfile(tempdir,'quasi-v10-export_epsilon.png'));
+    copyfile(exported.parametersImage,fullfile(previewFolder,'quasi-v10-export_parameters.png'));
+    copyfile(exported.image,fullfile(previewFolder,'quasi-v10-export_epsilon.png'));
     images=dir(fullfile(folder,'*.png'));
     for imageIndex=1:numel(images), assertReadableImage(fullfile(folder,images(imageIndex).name)); end
     data=readtable(exported.data,'VariableNamingRule','preserve');
@@ -42,7 +44,7 @@ function smokeQuasiOpticalV10
     assert(isequal(broad.frequencyHz(:),fig.UserData.model.materialSweepGHz(:)*1e9));
     broadComparison=api.getComparison(); assert(max(abs(broadComparison.deltaEpsilon))<1e-8);
     tabs.SelectedTab=findobj(fig,'Tag','retrievalConsistencyTab');
-    drawnow; pause(2); exportapp(fig,fullfile(pwd,'preview-v10-broadband.png'));
+    drawnow; pause(2); exportapp(fig,fullfile(previewFolder,'preview-v10-broadband.png'));
     api.loadData(struct('fHz',6e9,'s11',.1,'s21',.5,'sourcePath','changed TEST data')); assert(isempty(api.getResult()));
     assert(strcmp(findobj(fig,'Tag','exportRetrieval').Enable,'off'));
     fprintf('V10 UI passed: synthetic truth, TE/TM consistency, R/T reconstruction, metadata and exports, strict matching, method restrictions and stale-result invalidation.\n');

@@ -1,5 +1,7 @@
 function smokeQuasiOpticalDiagnostics
 % Verify the Simulation diagnostic view, unavailable states and export values.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D;
     cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     tab=findobj(fig,'Tag','simulationTab'); tab.Parent.SelectedTab=tab;
@@ -22,7 +24,7 @@ function smokeQuasiOpticalDiagnostics
     assert(any(params.Parameter=="Estimated specimen curvature phase variation"));
     snapshot=jsondecode(params.Value(params.Parameter=="Illumination setup snapshot"));
     assert(snapshot.actualIncidenceDeg==state.model.incidence && snapshot.D==state.model.D);
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v10-diagnostics.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v10-diagnostics.png'));
     fprintf('V10 diagnostic UI passed: values, guidance, launch plane, grazing unavailable, and exact setup metadata.\n');
 end
 

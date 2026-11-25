@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV9
 % Verify the 1 cm limits and horn selector through their Geometry callbacks.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D;
     cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     simulation=findobj(fig,'Tag','simulationTab'); simulation.Parent.SelectedTab=simulation;
@@ -30,7 +32,7 @@ function smokeQuasiOpticalV9
     params=QuasiOpticalParameters(s.parameters,s.model,s.materialInput,s.material,'3D geometry');
     assert(abs(str2double(params.Value(params.Parameter=="Horn aperture"))-s.model.D)<1e-10);
     assert(params.Value(params.Parameter=="Nominal horn gain")=="20");
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v9-horn-estimate.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v9-horn-estimate.png'));
     fprintf('V9 UI passed: 1 cm sample, manual and all standard horn options, frequency scaling and export metadata.\n');
 end
 

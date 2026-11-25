@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV8
 % Check the zero-distance endpoint through both Geometry controls and modes.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D;
     cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     simulation=findobj(fig,'Tag','simulationTab'); simulation.Parent.SelectedTab=simulation;
@@ -29,7 +31,7 @@ function smokeQuasiOpticalV8
     change(fourth,'Material R / T / A vs frequency'); change(mode,'Reflection'); change(lens,false);
     s=fig.UserData; params=QuasiOpticalParameters(s.parameters,s.model,s.materialInput,s.material,'3D geometry');
     assert(params.Value(params.Parameter=="Distance to sample")=="0");
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v8-zero-distance.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v8-zero-distance.png'));
     fprintf('V8 UI passed: zero and small positive distance, both modes, lens handling, plot modes and export metadata.\n');
 end
 

@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV7
 % Exercise Geometry frequency controls and their plotted and exported values.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D;
     cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     simulation=findobj(fig,'Tag','simulationTab'); simulation.Parent.SelectedTab=simulation;
@@ -30,7 +32,7 @@ function smokeQuasiOpticalV7
     assert(isequal(curve.XData([1 end]),[28 42]));
     html=findobj(fig,'Tag','symbolicTensorHTML'); linked=html.Data.setup;
     assert(isequal([linked.frequencyLowGHz linked.frequencyGHz linked.frequencyHighGHz],[28 33.5 42]));
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v7-frequency-band.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v7-frequency-band.png'));
     fprintf('V7 UI passed: independent bounds/center, clamping and invalid limits, both sweeps, linked setup.\n');
 end
 

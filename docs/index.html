@@ -3,67 +3,115 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="MATLAB tools for quasi-optical simulation, scalar material retrieval, and acquisition planning.">
-  <title>Quasi-Optical 3D</title>
-  <style>
-    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #152b34; background: #f1f6f6; }
-    body { margin: 0; }
-    header, main { padding: 2.5rem max(1.25rem, calc((100% - 67rem) / 2)); }
-    header { background: #102e39; color: #fff; }
-    h1 { font-size: clamp(2.35rem, 6vw, 4.5rem); line-height: 1.03; margin: 0 0 1rem; }
-    h2 { margin-top: 0; line-height: 1.2; }
-    p, li { line-height: 1.65; }
-    header p { max-width: 42rem; color: #d7ebef; font-size: 1.16rem; }
-    a { color: #096172; text-underline-offset: 0.2em; }
-    a:focus-visible { outline: 3px solid #bd5c0d; outline-offset: 4px; }
-    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
-    nav a { display: inline-block; color: #fff; border: 1px solid #a4ced2; border-radius: 0.35rem; padding: 0.7rem 1rem; font-weight: 650; }
-    nav a:first-child { color: #102e39; background: #c5ebd7; border-color: #c5ebd7; }
-    nav a:focus-visible { outline-color: #fff; }
-    main { display: grid; gap: 2rem; }
-    figure { margin: 0; }
-    figure img { display: block; width: 100%; height: auto; border-radius: 0.45rem; }
-    figcaption { margin-top: 0.65rem; }
-    .columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.5rem; }
-    section { padding: 1.5rem; background: #fff; border: 1px solid #d6e2e3; border-radius: 0.45rem; }
-    section p:last-child, section ul:last-child { margin-bottom: 0; }
-    ul { padding-left: 1.2rem; }
-    pre { padding: 1rem; background: #eaf3f3; overflow: auto; }
-  </style>
+  <meta name="description" content="Plan free-space material measurements in MATLAB. Compare straight-through transmission and bistatic reflection, with and without focusing lenses.">
+  <title>Quasi-Optical 3D | Free-space material measurement</title>
+  <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <header>
-    <h1>Quasi-Optical 3D</h1>
-    <p>Explore free-space electromagnetic measurements with reflection and transmission simulation, scalar S-parameter retrieval, and symbolic acquisition planning.</p>
-    <nav aria-label="Project links">
-      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">View repository</a>
-      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip">Download source (ZIP)</a>
-      <a href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
-    </nav>
-  </header>
-  <main>
-    <figure>
-      <img src="preview-v10-diagnostics.png" alt="MATLAB app showing the quasi-optical measurement geometry, simulation plots, and illumination diagnostics">
-      <figcaption>Illumination diagnostics in the MATLAB simulation workspace.</figcaption>
-    </figure>
-    <div class="columns">
-      <section>
-        <h2>Run the MATLAB app</h2>
-        <p>Unzip the source, open the extracted folder in MATLAB, and run:</p>
-        <pre><code>QuasiOpticalBistatic3D</code></pre>
-        <p>The MATLAB Online link opens the entry file after sign-in. Run the same command there. MATLAB Online Basic compatibility has yet to be verified.</p>
-      </section>
-      <section>
-        <h2>Documentation and examples</h2>
-        <ul>
-          <li><a href="Retrieval_method.html">S-parameter retrieval guide</a></li>
-          <li><a href="Variables_and_equations.html">Variables and equations</a></li>
-          <li><a href="SymbolicTensors.html">Interactive symbolic tensor workspace</a></li>
-          <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/V10_validation.md">v10 validation record</a></li>
-        </ul>
-        <p>The app includes synthetic examples for homogeneous isotropic slabs. Experimental accuracy has yet to be validated against reference measurements.</p>
-      </section>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="hero">
+    <div class="wrap">
+      <nav class="top-nav" aria-label="Main navigation">
+        <a class="brand" href="./">Quasi-Optical 3D</a>
+        <div class="nav-links">
+          <a href="#setups">Setups</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#documentation">Guides</a>
+        </div>
+      </nav>
+      <div class="hero-layout">
+        <div>
+          <h1 id="main" tabindex="-1">Free-space material measurement</h1>
+          <p class="intro">Plan how a microwave beam reaches a sample. Compare transmission and reflection, then use calibrated S-parameters to retrieve material properties in MATLAB.</p>
+          <div class="actions">
+            <a class="button primary" href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
+            <a class="button secondary" href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip">Download ZIP</a>
+          </div>
+          <code class="command">QuasiOpticalBistatic3D</code>
+          <p class="start-note">Run this command from the project folder. MATLAB Online requires sign-in. Basic compatibility is unverified.</p>
+        </div>
+        <figure class="hero-figure">
+          <a href="assets/transmission-with-lenses.png">
+            <img src="assets/transmission-with-lenses.png" width="1580" height="917" alt="MATLAB Simulation tab showing the transmitting and receiving horns on opposite sides of the slab, with lenses and a beam radius plot">
+          </a>
+          <figcaption>Straight-through transmission with ideal Tx/Rx lenses. MATLAB simulation.</figcaption>
+        </figure>
+      </div>
     </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section" id="setups" aria-labelledby="setups-heading">
+      <h2 id="setups-heading">Compare the four setups</h2>
+      <p class="section-intro">All four MATLAB simulations use the same 10 mm lossy slab at 10 GHz, 30° incidence, and a 1.2 m horn-to-sample distance. The modeled beam radius at the sample is 23.0 cm without lenses and 15.1 cm with lenses. Select any screenshot to view it at full size.</p>
+
+      <div class="setup-group">
+        <h3>Straight-through transmission</h3>
+        <p>The receiving horn sits beyond the sample, on the same line as the incident beam.</p>
+        <div class="pair">
+          <figure class="setup">
+            <a href="assets/transmission-without-lenses.png">
+              <img src="assets/transmission-without-lenses.png" width="1580" height="917" loading="lazy" alt="MATLAB transmission simulation with bare transmitting and receiving horns on opposite sides of the slab">
+            </a>
+            <figcaption><strong>Without lenses</strong><span>Transmission path with bare horns.</span></figcaption>
+          </figure>
+          <figure class="setup">
+            <a href="assets/transmission-with-lenses.png">
+              <img src="assets/transmission-with-lenses.png" width="1580" height="917" loading="lazy" alt="MATLAB transmission simulation with ideal lenses in the path of both horns">
+            </a>
+            <figcaption><strong>With ideal Tx/Rx lenses</strong><span>Transmission path with focusing optics.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="setup-group">
+        <h3>Bistatic specular reflection</h3>
+        <p>Separate transmitting and receiving horns sit on the incident side. The receiver is aligned with the specular path.</p>
+        <div class="pair">
+          <figure class="setup">
+            <a href="assets/reflection-without-lenses.png">
+              <img src="assets/reflection-without-lenses.png" width="1580" height="917" loading="lazy" alt="MATLAB reflection simulation showing a V-shaped specular path between separate bare horns on the incident side">
+            </a>
+            <figcaption><strong>Without lenses</strong><span>Bistatic reflection path with bare horns.</span></figcaption>
+          </figure>
+          <figure class="setup">
+            <a href="assets/reflection-with-lenses.png">
+              <img src="assets/reflection-with-lenses.png" width="1580" height="917" loading="lazy" alt="MATLAB reflection simulation showing ideal lenses on both arms of the V-shaped specular path">
+            </a>
+            <figcaption><strong>With ideal Tx/Rx lenses</strong><span>Bistatic reflection path with focusing optics.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow" aria-labelledby="workflow-heading">
+      <h2 id="workflow-heading">From setup to material properties</h2>
+      <ol class="workflow">
+        <li><strong>Choose the geometry.</strong> Set the frequency band, sample size and thickness, incidence angle, and polarization.</li>
+        <li><strong>Check the illumination.</strong> Compare the beam footprint and radius with and without ideal lenses. Check receiver alignment.</li>
+        <li><strong>Import calibrated data.</strong> Open <em>S-parameters to epsilon / mu</em> and load complex sample-face reflection and transmission from CSV or Touchstone. You can also start with a synthetic example.</li>
+        <li><strong>Review the retrieval.</strong> Inspect the recovered scalar properties and compare the reconstructed channels with the inputs.</li>
+      </ol>
+      <p class="model-note">Retrieval assumes a homogeneous, isotropic slab in air and known normal thickness. Experimental accuracy against calibrated reference measurements remains unverified.</p>
+    </section>
+
+    <section class="section" id="documentation" aria-labelledby="guides-heading">
+      <h2 id="guides-heading">Guides and documentation</h2>
+      <ul class="guides">
+        <li><a href="Retrieval_method.html">S-parameter retrieval guide</a></li>
+        <li><a href="Variables_and_equations.html">Variables and equations</a></li>
+        <li><a href="SymbolicTensors.html">Interactive symbolic acquisition planner</a></li>
+        <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/docs/TECHNICAL_GUIDE.md">Technical guide and version notes</a></li>
+        <li><a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/V10_validation.md">Validation record</a></li>
+      </ul>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">Quasi-Optical 3D on GitHub</a>
+      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/LICENSE">MIT license</a>
+    </div>
+  </footer>
 </body>
 </html>

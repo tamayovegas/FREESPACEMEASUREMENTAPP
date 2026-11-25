@@ -1,5 +1,7 @@
 function smokeQuasiOpticalV6
 % GUI integration for selectable free-space methods and comparison tables.
+    previewFolder = tempname;
+    mkdir(previewFolder);
     fig=QuasiOpticalBistatic3D; cleanup=onCleanup(@() close(fig)); %#ok<NASGU>
     tab=findobj(fig,'Tag','retrievalTab'); tab.Parent.SelectedTab=tab;
     tab.Parent.SelectionChangedFcn(tab.Parent,[]);
@@ -24,19 +26,19 @@ function smokeQuasiOpticalV6
             assert(contains(findobj(fig,'Tag','retrievalMuAxes').Title.String,'ASSUMED'));
         end
         if strcmp(name{1},'NIST iterative')
-            drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v6-nist.png'));
+            drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v6-nist.png'));
         end
     end
     channels.Value='four'; channels.ValueChangedFcn(channels,[]); api.calculate(); result=api.getResult();
     assert(~isempty(result)&&all(result.valid)&&strcmp(result.channelMode,'four'));
-    drawnow; pause(3); exportapp(fig,fullfile(pwd,'preview-v6-noniterative.png'));
+    drawnow; pause(3); exportapp(fig,fullfile(previewFolder,'preview-v6-noniterative.png'));
     compare=findobj(fig,'Tag','compareRetrievalMethods'); compare.ButtonPushedFcn(compare,[]);
     assert(strcmp(findobj(fig,'Tag','retrievalDetailTabs').SelectedTab.Title,'Free-space method tables'));
     html=findobj(fig,'Tag','retrievalMethodComparison'); assert(strcmp(html.Data.section,'comparison'));
-    drawnow; pause(4); exportapp(fig,fullfile(pwd,'preview-v6-comparison.png'));
+    drawnow; pause(4); exportapp(fig,fullfile(previewFolder,'preview-v6-comparison.png'));
     button=findobj(fig,'Tag','openRetrievalGuide'); button.ButtonPushedFcn(button,[]);
     guide=findall(groot,'Type','figure','Tag','QuasiOpticalRetrievalGuide'); drawnow; pause(4);
-    exportapp(guide,fullfile(pwd,'preview-v6-guide.png')); close(guide);
+    exportapp(guide,fullfile(previewFolder,'preview-v6-guide.png')); close(guide);
     field=findobj(fig,'Tag','retrievalResidualTolerance'); field.Value=1e-4; field.ValueChangedFcn(field,[]);
     assert(isempty(api.getResult()));
     fprintf('V6 UI passed: three free-space methods, mu assumptions, Newton inputs, two/four channel selection, export parameters, comparison tables and tradeoff bullets.\n');

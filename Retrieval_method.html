@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free-space conversion methods - NRW, NIST iterative and new non-iterative</title>
+<style>
+:root{color-scheme:light;--ink:#122c47;--blue:#176db4;--muted:#526b82;--line:#d9e4ef}
+*{box-sizing:border-box}body{margin:0;background:#f2f6fa;color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}main{max-width:1160px;margin:auto;padding:30px 28px 60px}h1{font-size:31px;line-height:1.2;margin:7px 0 14px}h2{font-size:22px;margin:0 0 13px}h3{font-size:17px;margin:16px 0 7px}.eyebrow{font-size:12px;font-weight:750;letter-spacing:.13em;color:var(--blue);text-transform:uppercase}.lead{font-size:18px;max-width:950px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:20px}.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.two>.card{margin-top:0}.equation{font-family:"Cambria Math",Georgia,serif;font-size:21px;background:#f2f7fc;border-left:3px solid var(--blue);padding:14px 18px;margin:12px 0;overflow-x:auto;white-space:nowrap}.equation.small{font-size:18px}.note{background:#fff7e6;border:1px solid #e7ca87;border-radius:10px;padding:15px 18px}.muted{color:var(--muted)}table{border-collapse:collapse;width:100%;margin-top:12px}td,th{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f2f7fc;font-size:13px}code{font-size:13px;background:#edf3f8;padding:3px 5px;border-radius:4px}ul,ol{padding-left:23px}li{margin:7px 0}.flow{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.step{flex:1;min-width:150px;background:#edf5fc;border:1px solid #c7def1;border-radius:10px;padding:15px;text-align:center;font-weight:650}.arrow{color:var(--blue);font-size:24px}.matrix{display:inline-grid;grid-template-columns:repeat(3,1fr);gap:12px 22px;vertical-align:middle;border-left:2px solid;border-right:2px solid;padding:9px 15px;margin:0 8px;font:20px Georgia,serif}.caption{font-size:13px;color:var(--muted)}a{color:var(--blue)}@media(max-width:780px){main{padding:20px 14px}.two{grid-template-columns:1fr}.card{padding:18px}.equation{font-size:18px}table{font-size:13px}.arrow{display:none}}@media print{body{background:white;font-size:10pt}main{padding:0;max-width:none}.card{break-inside:avoid;box-shadow:none}.equation{font-size:13pt}.two{gap:12px}h1{font-size:23pt}h2{font-size:16pt}.note{background:white}}
+
+nav{position:sticky;top:0;z-index:2;display:flex;gap:8px;flex-wrap:wrap;background:#f2f6faf5;border-bottom:1px solid var(--line);padding:12px 0;backdrop-filter:blur(8px)}nav a{background:white;border:1px solid var(--line);border-radius:7px;padding:7px 11px;text-decoration:none;font-size:13px;font-weight:650}section[id]{scroll-margin-top:74px}.qom-tablewrap{overflow:visible!important;height:auto!important;max-height:none!important}.qom-comparison-table{min-width:0;table-layout:fixed;width:100%;border:1px solid #a8bfd3}.qom-comparison-table th{font-size:14px}.qom-comparison-table td,.qom-comparison-table th{border:1px solid #b6cada}.qom-comparison-table .selected td{background:#e9f4ff}.method-top{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap}.pill{border-radius:20px;padding:5px 10px;background:#e5f5ec;color:#225c3f;font-size:12px;font-weight:750}.method-card{border-top:4px solid #82a5c5}.method-card.selected{border-top-color:var(--blue);box-shadow:0 0 0 2px #b9d9f3}.tradeoffs{display:grid;grid-template-columns:1fr 1fr;gap:22px}.tradeoffs h3{margin-top:10px}.tradeoffs ul{margin-top:4px}.adv h3{color:#236447}.dis h3{color:#86511a}.selector{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}select{border:1px solid #adc4d8;border-radius:7px;padding:9px 12px;background:white;color:var(--ink);font:inherit}.selector #method-guide{display:flex;flex-wrap:wrap;gap:7px}.selector button{border:1px solid #adc4d8;border-radius:7px;padding:9px 12px;background:white;color:var(--ink);font:inherit;cursor:pointer}.selector button.active{background:var(--blue);border-color:var(--blue);color:white;font-weight:700}.selector button:focus-visible{outline:3px solid #d79b23;outline-offset:2px}.selection-info{color:var(--muted);font-size:14px}.equation .subnote{font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.excluded{background:#faf5ed;border-left:4px solid #be8a45;padding:13px 17px;margin-top:16px}.status{font-size:13px;color:var(--muted)}@media(max-width:780px){.tradeoffs{grid-template-columns:1fr}nav{position:static}section[id]{scroll-margin-top:10px}}@media print{nav,.selector{display:none}.method-card.selected{box-shadow:none}.qom-comparison-table{min-width:0}.tradeoffs{gap:12px}.pill{background:white;border:1px solid}}
+body.compact-comparison main{padding-top:10px}body.compact-comparison main>.eyebrow,body.compact-comparison main>h1,body.compact-comparison main>p.lead,body.compact-comparison main>.note{display:none}</style></head><body><main>
+<div class="eyebrow">Free-space material measurement · scalar conversion methods</div>
+<h1>Choose how complex S-parameters become ε<sub>r</sub> and μ<sub>r</sub></h1>
+<p class="lead">Three methods are available for a calibrated, homogeneous, isotropic <strong>free-space slab</strong>. NRW supports normal or oblique incidence with explicit TE or TM polarization. NIST iterative and new non-iterative remain restricted to normal incidence and retrieve permittivity while <strong>assuming μ<sub>r</sub> = 1</strong>. All need complex reflection and transmission and known normal thickness.</p>
+<div class="note"><strong>Source supplied with this project:</strong> Rohde &amp; Schwarz, <em>Measurement of Dielectric Material Properties</em>, Kuek Chee Yaw, April 2012. The uploaded filename is <code>RAC-0607-0019_1_5E.pdf</code>; its cover and internal footer identify revision <code>RAC0607-0019_1_4E</code>. The tables below paraphrase Tables 3 and 4 (pp. 11 and 16), retaining only the methods applicable to this free-space slab. Equations specialize Annexes 2, 4 and 5 to zero cutoff and sample-surface reference planes.</div>
+<nav aria-label="Guide sections"><a href="#comparison">Method tables</a><a href="#tradeoffs">Advantages / disadvantages</a><a href="#nrw">NRW equations</a><a href="#oblique">Oblique TE/TM</a><a href="#nist">NIST equations</a><a href="#noniterative">Non-iterative equations</a><a href="#quality">Quality checks</a></nav>
+
+<section class="card" id="comparison"><h2>Conversion techniques and measured properties</h2>
+<div class="selector"><strong id="method-guide-label">Highlight a method</strong><div id="method-guide" role="group" aria-labelledby="method-guide-label"><button type="button" data-highlight="NRW" aria-pressed="true">NRW</button><button type="button" data-highlight="NIST iterative" aria-pressed="false">NIST iterative</button><button type="button" data-highlight="New non-iterative" aria-pressed="false">New non-iterative</button></div><span id="selection-info" class="selection-info" aria-live="polite">NRW retrieves both εᵣ and μᵣ.</span></div>
+<table class="qom-comparison-table"><caption class="caption" style="text-align:left;margin:12px 0 6px">Free-space subset of source Table 3, p. 11</caption><thead><tr><th>Conversion technique</th><th>Complex S-parameters</th><th>Material properties</th></tr></thead><tbody>
+<tr data-method="NRW"><td><strong>NRW</strong></td><td>S11, S21<br><span class="caption">Source also permits S11, S21, S12, S22</span></td><td>ε<sub>r</sub>, μ<sub>r</sub> retrieved</td></tr>
+<tr data-method="NIST iterative"><td><strong>NIST iterative</strong></td><td>S11, S21<br><span class="caption">Source also permits S11, S21, S12, S22</span></td><td>ε<sub>r</sub> retrieved<br>μ<sub>r</sub> = 1 assumed</td></tr>
+<tr data-method="New non-iterative"><td><strong>New non-iterative</strong></td><td>S11, S21<br><span class="caption">Source also permits S11, S21, S12, S22</span></td><td>ε<sub>r</sub> retrieved<br>μ<sub>r</sub> = 1 assumed</td></tr>
+</tbody></table>
+<p class="caption">Choose the S11/S21 pair or the four-channel option in the calculation panel. Four-channel mode projects the data onto a reciprocal, symmetric slab: r = (S11 + S22)/2 and t = (S21 + S12)/2. The selected method then uses r and t, and the result is checked against all four original channels. Asymmetric data are flagged if their raw reconstruction residual exceeds the selected threshold.</p>
+<h3>Material and setup comparison</h3>
+<table class="qom-comparison-table"><caption class="caption" style="text-align:left;margin:6px 0">Free-space rows from source Table 4, p. 16; the combined NIST / new non-iterative row is separated for comparison</caption><thead><tr><th>Material / geometry in source</th><th>Measurement setup</th><th>Conversion method</th><th>Relative speed</th><th>Qualitative accuracy in source</th></tr></thead><tbody>
+<tr data-method="NIST iterative"><td>High-temperature solids; large, flat; nonmagnetic</td><td>Free space</td><td>NIST iterative</td><td>Slow</td><td>Good</td></tr>
+<tr data-method="New non-iterative"><td>High-temperature solids; large, flat; nonmagnetic</td><td>Free space</td><td>New non-iterative</td><td>Fast</td><td>Good</td></tr>
+<tr data-method="NRW"><td>High-temperature solids; large, flat; nonmagnetic</td><td>Free space</td><td>NRW</td><td>Fast</td><td>Medium</td></tr>
+</tbody></table>
+<p class="caption"><strong>Interpret these labels as a general comparison from the application note.</strong> They are not error bounds, measured execution times or guaranteed accuracy. High temperature describes the source's sample category; the app applies no temperature correction. Actual uncertainty depends on calibration, thickness, beam coverage, dynamic range, sample properties and model validity. NRW can also retrieve a magnetic scalar response when its assumptions and conditioning hold, although the source's free-space table lists nonmagnetic samples.</p>
+<div class="excluded"><strong>Why SCL is excluded.</strong> The source's SCL uses S11 in a short-circuited coaxial or waveguide fixture (p. 15). It cannot be applied unchanged to an unbacked two-horn free-space slab. A metal-backed free-space reflection inversion needs a separate forward model and is outside these three options. Resonator, probe and guided-fixture methods are also outside this free-space selector.</div>
+</section>
+
+<section class="card" id="tradeoffs"><h2>Advantages and disadvantages at a glance</h2>
+<p class="muted">Summarized for the free-space implementation. The source discusses NRW, NIST iterative and the new non-iterative method on pp. 12–14. Benefits remain conditional on the slab and calibration assumptions below.</p>
+<section class="card method-card" data-method="NRW"><div class="method-top"><h2>NRW</h2><span class="pill">εᵣ and μᵣ retrieved</span></div><div class="tradeoffs"><div class="adv"><h3>Advantages</h3><ul><li>Fast, direct calculation with no iterative starting guess.</li><li>Retrieves both scalar permittivity and permeability.</li><li>Useful when magnetic response cannot be assumed absent.</li></ul></div><div class="dis"><h3>Disadvantages</h3><ul><li>Poor conditioning near low-loss half-wave resonances.</li><li>The phase branch still needs physical justification.</li><li>Weak transmission and small calibration or thickness errors can strongly affect the result.</li></ul></div></div><p class="status">Free-space specialization of Annex 2. The implementation excludes ill-conditioned results rather than filling gaps by interpolation.</p></section>
+<section class="card method-card" data-method="NIST iterative"><div class="method-top"><h2>NIST iterative</h2><span class="pill">εᵣ retrieved · μᵣ = 1 assumed</span></div><div class="tradeoffs"><div class="adv"><h3>Advantages</h3><ul><li>Fixing μᵣ reduces the unknowns to complex permittivity.</li><li>Avoids NRW's separate impedance division near half-wave resonances.</li><li>Can support low-loss and longer slabs with a suitable initial estimate.</li></ul></div><div class="dis"><h3>Disadvantages</h3><ul><li>Applies only when a nonmagnetic assumption is justified.</li><li>Requires an initial estimate and iterative convergence.</li><li>Can reach a different phase branch or fail to converge; residual alone does not prove the result.</li></ul></div></div><p class="status">Newton solution of the sample-surface, free-space determinant equation from Annex 4. Permeability is fixed, not independently measured.</p></section>
+<section class="card method-card" data-method="New non-iterative"><div class="method-top"><h2>New non-iterative</h2><span class="pill">εᵣ retrieved · μᵣ = 1 assumed</span></div><div class="tradeoffs"><div class="adv"><h3>Advantages</h3><ul><li>Fast, direct propagation-based permittivity calculation.</li><li>Needs no iterative initial permittivity estimate.</li><li>Avoids dividing the propagation index by an independently retrieved impedance.</li></ul></div><div class="dis"><h3>Disadvantages</h3><ul><li>Applies only when a nonmagnetic assumption is justified.</li><li>Logarithmic phase branches remain ambiguous.</li><li>Interface extraction can still be ill-conditioned; low transmission and model mismatch remain limits.</li></ul></div></div><p class="status">Annex 5, equation (3.10), method order one. Improved conditioning described in the source is not a guarantee that every noisy or singular dataset is recoverable.</p></section>
+</section>
+
+<section class="card"><h2>Measurement and calibration come first</h2>
+<div class="flow"><div class="step">Complex measured channels</div><div class="arrow">→</div><div class="step">Calibration to sample surfaces</div><div class="arrow">→</div><div class="step">Γ and propagation P</div><div class="arrow">→</div><div class="step">n, z, ε<sub>r</sub>, μ<sub>r</sub></div></div>
+<ul><li>The slab is flat, homogeneous, isotropic, reciprocal and surrounded by air on both sides. Its normal thickness is <em>d</em>, with both reference planes at the slab surfaces.</li><li>Each input spectrum represents one fixed angle θ relative to the sample normal and one TE or TM polarization. NRW uses the oblique equations below; NIST and new non-iterative require θ = 0. TE and TM are equivalent at normal incidence. Guided modes, anisotropy and cross-polarization require different models.</li><li>The calibrated channels must represent the slab's reflection and transmission in the same normalized plane-wave mode. The illuminated sample must support the assumed slab/plane-wave approximation. An Rx observation arc is not an incidence-angle sweep.</li><li>A two-horn arc reflection transfer is commonly <strong>raw VNA S21</strong>. After calibration it can supply the <em>sample reflection coefficient</em> used as S11 in this inversion. Raw horn-port S11 contains antenna mismatch. Raw arc S21 is not automatically the sample S21 transmission.</li><li>The importer reads the channel labels in the file. It does not perform calibration, background subtraction, time gating, reference-plane correction or channel reassignment.</li></ul>
+</section>
+
+<section class="card"><h2>Time convention and variables</h2>
+<div class="equation">e<sup>+jωt</sup>, &nbsp; k<sub>0</sub> = ω/c<sub>0</sub>, &nbsp; P = e<sup>−jk₀qd</sup>, &nbsp; q = k<sub>z</sub>/k<sub>0</sub>, &nbsp; ε<sub>r</sub> = ε′ − jε″, &nbsp; μ<sub>r</sub> = μ′ − jμ″</div>
+<p>Here <em>j</em> is the imaginary unit; ω = 2π<em>f</em> is angular frequency; <em>c</em><sub>0</sub> is the speed of light; <em>n</em> is the bulk refractive index with n² = ε<sub>r</sub>μ<sub>r</sub>; <em>q</em> is normalized <em>normal</em> propagation; and <em>z</em> is slab wave impedance normalized to air for the selected polarization. At normal incidence q = n. For a passive local isotropic material, ε″ and μ″ are nonnegative and |P| ≤ 1. The Gaussian beam parameter in the geometry guide also uses the traditional letter q; it has units of length and is a different quantity.</p>
+</section>
+
+<section class="card" id="nrw"><h2>NRW: 1. Slab scattering and interface reflection</h2>
+<p>Denote the calibrated complex sample reflection and transmission by <em>a</em> = S11 and <em>b</em> = S21. The source's transmission coefficient <em>T</em> is called <em>P</em> here to distinguish propagation from transmitted power.</p>
+<div class="equation">a = Γ(1 − P²)/(1 − Γ²P²), &nbsp;&nbsp; b = (1 − Γ²)P/(1 − Γ²P²)</div>
+<div class="equation">X = (1 + a² − b²)/(2a), &nbsp;&nbsp; Γ = X ± √(X² − 1)</div>
+<p class="muted">These are the slab equations and source equations (1.1)–(1.2), p. 19. The passive root is selected. Direct division by <em>a</em> becomes unstable near vanishing reflection.</p>
+<h3>Equivalent impedance expression used by this app</h3>
+<div class="equation">z = √[((1 + a)² − b²)/((1 − a)² − b²)], &nbsp;&nbsp; Γ = (z − 1)/(z + 1)</div>
+<p>The sign of <em>z</em> is chosen with nonnegative real part, as required for passive forward power flow. For a purely imaginary impedance, the tie is resolved using the decaying propagation factor. This equivalent algebra handles a matched lossy slab with S11 = 0 when its impedance expression remains well conditioned. When its numerator or denominator approaches zero, the NRW calculation excludes that frequency as a singularity. Each method also reports its own numerical and reconstruction checks.</p>
+</section>
+
+<div class="two" style="margin-top:20px"><section class="card"><h2>2. Propagation through the material</h2>
+<div class="equation small">P = (a + b − Γ)/(1 − (a + b)Γ)</div>
+<p>This is source equation (1.3), p. 19. The app uses the equivalent expression:</p>
+<div class="equation">P = b/(1 − aΓ)</div>
+<p>Transmission at or below the selected amplitude floor is excluded. The floor must reflect the calibrated instrument's noise and dynamic range; the software default is a computational threshold, not an instrument specification.</p>
+</section><section class="card"><h2>3. Normal propagation and material parameters</h2>
+<div class="equation small">q<sub>m</sub> = [−φ<sub>u</sub> + 2πm + j ln|P|]/(k<sub>0</sub>d), &nbsp; k<sub>z</sub> = k<sub>0</sub>q<sub>m</sub></div>
+<div class="equation">At θ = 0: &nbsp; ε<sub>r</sub> = q<sub>m</sub>/z, &nbsp; μ<sub>r</sub> = q<sub>m</sub>z</div>
+<p>φ<sub>u</sub> is the optionally unwrapped phase of <em>P</em>, and <em>m</em> is the user-selected integer branch. At normal incidence these reduce to source equations (1.4)–(1.6), p. 20. At oblique incidence use the conversion below.</p>
+</section></div>
+
+<section class="card" id="oblique"><h2>Oblique NRW: polarization-specific conversion</h2>
+<p>Conservation of tangential wave number gives k<sub>x</sub> = k<sub>0</sub> sin θ and q² = ε<sub>r</sub>μ<sub>r</sub> − sin²θ. The same slab-scattering inverse recovers q and z, but the conversion into constitutive scalars depends on polarization. Set c = cos θ.</p>
+<div class="equation small">Z<sub>air,TE</sub> = η<sub>0</sub>/c, &nbsp; z<sub>TE</sub> = μ<sub>r</sub>c/q &nbsp; ⇒ &nbsp; μ<sub>r</sub> = zq/c, &nbsp; ε<sub>r</sub> = (q² + sin²θ)/μ<sub>r</sub></div>
+<div class="equation small">Z<sub>air,TM</sub> = η<sub>0</sub>c, &nbsp; z<sub>TM</sub> = q/(ε<sub>r</sub>c) &nbsp; ⇒ &nbsp; ε<sub>r</sub> = q/(zc), &nbsp; μ<sub>r</sub> = (q² + sin²θ)/ε<sub>r</sub></div>
+<div class="equation">n = √(ε<sub>r</sub>μ<sub>r</sub>), &nbsp; sign selected consistently with retrieved q</div>
+<p>η<sub>0</sub> is the intrinsic free-space impedance. R/T use tangential electric-field amplitudes with identical air modes on both sides. Some total-field TM conventions reverse the reflected coefficient's sign; calibration and inversion must use the same convention. Grazing incidence with cos θ &lt; 10<sup>−6</sup> is rejected; singular material conversions remain unavailable. Reconstruction uses a separate oblique forward calculation from the recovered ε and μ.</p>
+<h3>Synthetic benchmark from the supplied oblique note, p. 13</h3>
+<p>f = 6 GHz, d = 10 mm, θ = 45°, ε<sub>r</sub> = 4 − j0.08, μ<sub>r</sub> = 1. These are generated values, not measured data.</p>
+<p>The synthetic loader also offers a broadband example from the simulation material and frequency band. It seeds the editable initial branch using the known generated propagation, and labels this use of generation truth. Experimental data still need an independently justified absolute branch; a successful synthetic round trip does not solve that measurement ambiguity.</p>
+<table><thead><tr><th>Polarization</th><th>|R| / phase R / |T| (rounded)</th><th>Correct oblique recovery</th><th>Deliberately wrong θ = 0 interpretation</th></tr></thead><tbody>
+<tr><td>TE</td><td>0.614 / 147.1° / 0.763</td><td>ε = 4 − j0.08, μ = 1</td><td>ε ≈ 4.950 − j0.113, μ ≈ 0.707</td></tr>
+<tr><td>TM</td><td>0.282 / 137.8° / 0.934</td><td>ε = 4 − j0.08, μ = 1</td><td>ε ≈ 2.828 − j0.0566, μ ≈ 1.238 − j0.0035</td></tr>
+</tbody></table>
+<h3>Comparing TE and TM</h3>
+<p>Each spectrum has its own fixed angle and normal thickness. Comparison requires exact matching of frequency grid, angle and thickness and opposite polarization; no interpolation is performed. Plots show both estimates, Δε = ε<sub>TE</sub> − ε<sub>TM</sub>, Δμ = μ<sub>TE</sub> − μ<sub>TM</sub>, and real/imaginary input and reconstructed R/T. Agreement is a useful isotropic-model consistency check. Disagreement can reflect calibration, angle, polarization, finite-beam or other model/measurement inconsistency; it does not automatically diagnose anisotropy. Numerical validity is independent of illumination guidance.</p>
+<p class="caption">Oblique equations and worked example: supplied <em>Oblique-Incidence Material Extraction in NRL-Arch and Free-Space Electromagnetic Measurements</em>, pp. 6-7 and 13. The source's later correction/optimization proposals are outside this release.</p>
+</section>
+
+<section class="card" id="nist"><div class="method-top"><h2>NIST iterative: solve for ε<sub>r</sub> with μ<sub>r</sub> = 1</h2><span class="pill">Nonmagnetic model</span></div>
+<p>Let <em>n</em> = √ε<sub>r</sub> on a passive propagation branch. With zero cutoff and reference planes at the sample surfaces, Annex 4's determinant equation reduces to:</p>
+<div class="equation">Γ = (1 − n)/(1 + n), &nbsp; P = e<sup>−jk₀nd</sup>, &nbsp; D<sub>meas</sub> = S11² − S21²</div>
+<div class="equation">D<sub>model</sub>(ε<sub>r</sub>) = (Γ² − P²)/(1 − Γ²P²)</div>
+<p>Write ε<sub>r</sub> = ε′ − jε″ and form two real residuals from the complex difference. The Newton update uses a finite-difference Jacobian:</p>
+<div class="equation small">x = [ε′, ε″]<sup>T</sup>, &nbsp; F(x) = [Re(D<sub>model</sub> − D<sub>meas</sub>), Im(D<sub>model</sub> − D<sub>meas</sub>)]<sup>T</sup></div>
+<div class="equation">J<sub>ij</sub> = ∂F<sub>i</sub>/∂x<sub>j</sub>, &nbsp; x<sub>next</sub> = x − J<sup>−1</sup>F(x)</div>
+<p class="caption">Free-space, sample-surface reduction of source equation (2.8), p. 25; Newton/Jacobian procedure on pp. 25–26. The air-line reference-plane factors in the source are removed by calibration to the sample surfaces. The direct method solves the two-channel determinant. The optional four-channel wrapper first applies the reciprocal, symmetric projection described above, then checks the reconstruction against all four raw channels.</p>
+<ul><li>The initial ε′ and loss ε″ select the neighborhood explored by the root finder. A nearby converged sweep point can support continuity.</li><li>A converged determinant root must also reproduce the individual measured S11 and S21 and satisfy the passive model. The determinant alone discards information.</li><li>Convergence and small residual do not resolve every branch ambiguity or establish that μ<sub>r</sub> = 1 is valid.</li></ul>
+</section>
+
+<section class="card" id="noniterative"><div class="method-top"><h2>New non-iterative: propagation index squared</h2><span class="pill">Nonmagnetic model</span></div>
+<p>Annex 5 introduces effective parameters. Let Λ denote the source's material propagation wavelength parameter and λ<sub>0g</sub> its empty-cell wavelength. In free space λ<sub>0g</sub> = λ<sub>0</sub>. Rename the source's method order <em>n</em> to <em>p</em> here, keeping <em>n</em> for refractive index:</p>
+<div class="equation small">ε<sub>eff,new</sub> = ε<sub>eff</sub> μ<sub>eff</sub><sup>p</sup> = [(1 − Γ)/(1 + Γ)]<sup>p−1</sup> (λ<sub>0g</sub>/Λ)<sup>p+1</sup></div>
+<div class="equation">p = 1, &nbsp; λ<sub>0</sub>/Λ = n<sub>m</sub> &nbsp; ⇒ &nbsp; ε<sub>r</sub> = n<sub>m</sub>², &nbsp; μ<sub>r</sub> = 1 (assumed)</div>
+<p>The implementation obtains the propagation eigenvalue directly from the two slab channels using the algebraically equivalent transfer relation, avoiding a direct division by S11:</p><div class="equation small">C = (1 − S11² + S21²)/(2 S21), &nbsp; P = C ± √(C² − 1)</div><p>A passive outgoing root is selected using interface information and continuity where available. The phase logarithm then gives the propagation index:</p>
+<div class="equation small">n<sub>m</sub> = [−φ<sub>u</sub> + 2πm + j ln|P|]/(k<sub>0</sub>d)</div>
+<p class="caption">Source equations (3.1)–(3.10), pp. 27–28, specialized to free space. The value one in source equation (3.10) is the method order, not a declaration that the sample refractive index equals one.</p>
+<ul><li>Setting μ<sub>r</sub> to one removes its independent retrieval and the final NRW division by impedance.</li><li>The interface-root and propagation extraction still need valid complex channels. Half-wave conditioning can still affect that extraction even though the final constitutive formula is simplified.</li><li>For a magnetic sample this assumption can bias ε<sub>r</sub>. Inspect reconstructed S11/S21; the returned μ<sub>r</sub> is an assumption.</li></ul>
+</section>
+
+<section class="card"><h2>The branch must be justified</h2>
+<p>The measured propagation factor repeats after a whole phase turn. Frequency unwrapping follows continuous changes in a sufficiently dense sweep, but it cannot determine how many complete turns occurred before the first frequency. The selected integer <em>m</em> is added to the unwrapped phase result. The returned per-frequency <code>branch</code> includes both that offset and the turns tracked by unwrapping.</p>
+<div class="equation">τ<sub>P</sub> = −(1/2π) dφ<sub>u</sub>/df</div>
+<p>The source discusses group delay and initial material estimates on pp. 20–21. Independent prior knowledge, additional thickness measurements or a justified dispersion model can support branch selection. A small reconstruction error alone cannot establish the correct branch: different branches can reproduce the same S-parameters. Across excluded data, unwrapping restarts because the missing phase turns are unknown.</p>
+</section>
+
+<section class="card"><h2>What the retrieved scalars mean for tensors</h2>
+<p>Under the isotropic assumption, NRW returns the two scalars below. For NIST iterative and new non-iterative, the permeability matrix is the identity by assumption; it is not an independent permeability measurement:</p>
+<div class="equation">ε̿<sub>r</sub> = <span class="matrix"><span>ε<sub>r</sub></span><span>0</span><span>0</span><span>0</span><span>ε<sub>r</sub></span><span>0</span><span>0</span><span>0</span><span>ε<sub>r</sub></span></span> &nbsp; μ̿<sub>r</sub> = <span class="matrix"><span>μ<sub>r</sub></span><span>0</span><span>0</span><span>0</span><span>μ<sub>r</sub></span><span>0</span><span>0</span><span>0</span><span>μ<sub>r</sub></span></span></div>
+<p>A single co-polar S11/S21 pair does not independently determine the entries of a general permittivity or permeability tensor. The symbolic tensor workspace describes the additional angle, azimuth and polarization channels used to formulate that larger inverse problem.</p>
+<div class="equation small">ε<sub>r,eff</sub>(ω) = ε<sub>r,dielectric</sub>(ω) − jσ(ω)/(ωε<sub>0</sub>)</div>
+<p>The retrieved electric loss includes conduction. Separating ε″ from conductivity σ requires further information or a justified broadband model. This retrieval does not generate a separate conductivity tensor.</p>
+</section>
+
+<section class="card"><h2>Input files</h2>
+<table><thead><tr><th>Format</th><th>Accepted representation</th><th>Requirements</th></tr></thead><tbody>
+<tr><td>CSV, real/imaginary</td><td><code>frequency_Hz,S11_real,S11_imag,S21_real,S21_imag</code></td><td>Explicit frequency unit. kHz, MHz and GHz frequency headers are also accepted.</td></tr>
+<tr><td>CSV, magnitude/phase</td><td><code>S11_mag,S11_phase_deg</code><br>or <code>S11_dB,S11_phase_deg</code></td><td>A complete pair for each channel; radians may use <code>phase_rad</code>. Magnitude-only input is rejected.</td></tr>
+<tr><td>Touchstone 1 .s2p</td><td>RI, MA or DB; Hz/kHz/MHz/GHz</td><td>Standard two-port order S11, S21, S12, S22. Optional wrapped data lines and comments are accepted. Touchstone 2 blocks and noise blocks are rejected.</td></tr>
+</tbody></table>
+<p>The four S-parameters here are the forward/reverse coefficients of a two-port measurement, not four TE/TM polarization channels. Rows are sorted by frequency with their channels together. Duplicate frequencies are rejected: use one angle/polarization sweep per file. Select pair mode to use S11/S21 directly or four-channel mode to use r = (S11 + S22)/2 and t = (S21 + S12)/2 under reciprocal, symmetric slab assumptions. Four-channel mode requires all four complex channels and checks their raw reconstruction residual. Data that exceed the selected residual threshold are flagged invalid; averaging does not remove the asymmetry check. The file's reference impedance is recorded; the importer does not renormalize the ports.</p>
+</section>
+
+<section class="card" id="quality"><h2>Quality indicators and limits</h2>
+<div class="equation small">r<sub>S</sub> = √(|S11<sub>reconstructed</sub> − S11<sub>input</sub>|² + |S21<sub>reconstructed</sub> − S21<sub>input</sub>|²)</div>
+<table><thead><tr><th>Indicator</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td><code>valid = true</code></td><td>Finite, passive scalar result under the selected method, branch, geometry and numerical thresholds, with acceptable reconstruction. This is not an uncertainty certificate or proof of model adequacy.</td></tr>
+<tr><td>Half-wave / singular impedance</td><td>NRW loses conditioning near low-loss slab half-wave resonances. Constrained methods reduce some of that instability but can still fail their numerical or reconstruction checks. Excluded points remain unavailable.</td></tr>
+<tr><td>Transmission floor</td><td>Opaque or low-transmission data cannot reliably resolve the propagation factor and material parameters.</td></tr>
+<tr><td>Non-passive result</td><td>Check calibration, noise, input convention, branch and slab assumptions. Calculated values are flagged invalid.</td></tr>
+<tr><td>Raw four-channel passivity</td><td>The largest squared singular value of the normalized measured two-port scattering matrix must not exceed unity beyond tolerance. This check is separate from averaging and reconstruction; calibration/noise can cause a failed check.</td></tr>
+<tr><td>Small residual</td><td>The assumed slab equations reproduce the channels. Branch ambiguity, calibration error and anisotropy can still remain.</td></tr>
+</tbody></table>
+<p class="caption">Method selection is provided by the free-space calculation panel; phase-resolved import is provided by <code>QuasiOpticalReadSParameters.m</code>. Source references: Table 3 (p. 11), method summaries (pp. 12–15), free-space rows of Table 4 (p. 16), NRW Annex 2 (pp. 19–21), NIST Annex 4 (pp. 24–26), new non-iterative Annex 5 (pp. 27–28).</p>
+</section>
+</main>
+<script>
+(function(){
+  var methodButtons=document.querySelectorAll('[data-highlight]');
+  var messages={'NRW':'NRW retrieves εᵣ and μᵣ at normal or oblique TE/TM incidence.','NIST iterative':'Normal incidence only: εᵣ retrieved, μᵣ fixed to 1.','New non-iterative':'Normal incidence only: εᵣ retrieved, μᵣ fixed to 1.'};
+  function selectMethod(value){
+    if(!Object.prototype.hasOwnProperty.call(messages,value))return;
+    methodButtons.forEach(function(button){var active=button.getAttribute('data-highlight')===value;button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');});
+    document.getElementById('selection-info').textContent=messages[value];
+    document.querySelectorAll('[data-method]').forEach(function(el){el.classList.toggle('selected',el.getAttribute('data-method')===value);});
+  }
+  methodButtons.forEach(function(button){button.addEventListener('click',function(){selectMethod(button.getAttribute('data-highlight'));});});
+  window.selectGuideMethod=selectMethod;
+  selectMethod('NRW');
+})();
+function setup(htmlComponent){
+  function readHost(){
+    var data=htmlComponent.Data;
+    if(data&&data.method&&window.selectGuideMethod)window.selectGuideMethod(data.method);
+    if(data&&data.section==='comparison')document.body.classList.add('compact-comparison');
+    if(data&&data.section){var target=document.getElementById(data.section);if(target){var reveal=function(){target.scrollIntoView({block:'start'});};requestAnimationFrame(function(){requestAnimationFrame(reveal);});setTimeout(reveal,50);}}
+  }
+  htmlComponent.addEventListener('DataChanged',readHost);
+  readHost();
+}
+</script></body></html>

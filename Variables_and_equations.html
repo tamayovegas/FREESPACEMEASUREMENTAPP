@@ -1,0 +1,188 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Variables and equations — Quasi-Optical 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"><style>*{box-sizing:border-box}html{width:100%;overflow-x:hidden}body{width:calc(100% - 80px);font:15px/1.55 Arial,sans-serif;color:#17324b;background:#f6f9fc;margin:20px;max-width:1100px}h1{font-size:24px}h2{font-size:19px;margin-top:28px}table{table-layout:fixed;border-collapse:collapse;width:100%;background:white}td,th{overflow-wrap:anywhere;padding:8px;border:1px solid #ccd6df;text-align:left;vertical-align:top}th{background:#e4eef7}th:first-child{width:23%}pre{white-space:pre-wrap;background:#e5eef6;padding:12px;border-radius:6px;font:14px/1.7 Consolas,monospace}a{color:#075aad}nav{display:flex;gap:14px;flex-wrap:wrap}.note{border-left:4px solid #c77700;padding:10px;background:#fff3d9}code{font-family:Consolas,monospace}</style></head><body>
+<h1>Variables, readouts and equations</h1>
+<p class="note">For symbolic permittivity, permeability and conductivity tensors, their rotation, polarized S11/S21 blocks, angle-dependent equations and retrieval assumptions, open the app's <b>Symbolic tensors &amp; S-parameters</b> workspace or <a href="SymbolicTensors.html">the standalone symbolic guide</a>. Tensor entries remain letters; the numerical simulator below remains isotropic.</p>
+<nav><a href="#controls">Controls</a><a href="#readout">Readout</a><a href="#beam">Gaussian beam</a><a href="#rotation">Geometry</a><a href="#material">Materials</a><a href="#slab">R / T / A</a><a href="#rcs">RCS scale</a><a href="#workflow">Usage</a></nav>
+<p>This app combines a geometric/Gaussian illumination visualization with a passive isotropic slab simulation. Material properties determine reflected, transmitted and absorbed power. Presets are illustrative, not measured data. SI units are used in equations unless marked otherwise.</p>
+<h2 id="controls">1. Configuration controls</h2>
+<table><tr><th>Control / symbol</th><th>Meaning and units</th></tr>
+<tr><td>Reflection / Transmission</td><td>Reflection retains the original two-horn layout in front of the unrotated sample. Transmission places Rx behind the sample on the same straight axis as Tx. Rotating the sample does not move the horns.</td></tr>
+<tr><td>Tx, Rx</td><td>Transmitting and receiving horn, respectively. The red envelope shows the receiver's reciprocal acceptance beam, not calculated reflected or transmitted power.</td></tr>
+<tr><td>Low f<sub>low</sub> and high f<sub>high</sub> frequencies (GHz)</td><td>Exact inputs for the lower and upper endpoints of both simulation frequency plots. Default: 2 and 25 GHz. Both must be positive and the low endpoint must be below the high endpoint. These settings do not alter imported S-parameter frequencies.</td></tr>
+<tr><td>Center frequency f<sub>center</sub> (GHz)</td><td>Reference frequency for geometry and single-frequency results, selected with an exact input or slider. Default: 10 GHz. It may be anywhere within the low/high bounds. Narrowing the band moves an excluded center to the nearest endpoint. The dotted line in both frequency plots marks this setting. 1 GHz = 10⁹ Hz.</td></tr>
+<tr><td>Horn aperture mode</td><td>Choose <b>Known aperture (manual)</b> if you know the maximum opening dimension. When it is unknown, choose a generic 15, 20 or 25 dBi nominal gain and the app estimates the aperture from the center frequency.</td></tr>
+<tr><td>Horn aperture D (cm)</td><td>Maximum linear dimension of the horn opening in manual mode, or equivalent square diagonal in estimate mode. The model uses D for the field-region formulas and Gaussian waist. The square horn drawing has diagonal D. 1 cm = 0.01 m.</td></tr>
+<tr><td>Distance R (m)</td><td>Distance from each horn aperture reference center to the sample center: R<sub>t</sub> = R<sub>r</sub> = R. Range: 0 to 5 m; default: 1.2 m. In transmission, the Tx-to-Rx centerline distance is 2R. At R = 0 both aperture reference centers coincide with the sample center.</td></tr>
+<tr><td>Horn layout angle θ (deg)</td><td>Sets fixed horn positions relative to the original −x sample normal. It equals incidence only at zero sample rotation. The actual incidence α is recomputed from the rotated normal.</td></tr>
+<tr><td>Sample width W and height H (cm)</td><td>Rectangular sample dimensions along its local u and v axes, each adjustable from 1 to 110 cm. Fibers are drawn along v. This geometric fiber direction does not specify a material permittivity or anisotropic scattering model.</td></tr>
+<tr><td>E angle ψ from local TE (deg)</td><td>Linear electric-field orientation. ψ = 0 is TE; ψ = 90° is TM. TE is perpendicular to the plane containing the incident direction and sample normal; TM lies in that plane and is perpendicular to propagation. At normal incidence the fiber direction defines the TE reference.</td></tr>
+<tr><td>Lens position ℓ (m)</td><td>Distance from each horn aperture toward the sample to its ideal lens. Must be less than R. A lens at/after the sample is disabled.</td></tr>
+<tr><td>Lens focal length F (m)</td><td>Ideal positive thin-lens focal length. It is not the location of the resulting beam waist; that is calculated from the complex beam parameter q.</td></tr>
+<tr><td>Yaw γ, pitch β, roll ρ (deg)</td><td>Rotation of the sample about its center using global z, y, and x axes, with Q = Rz(γ) Ry(β) Rx(ρ). Roll acts first. Roll alone rotates within the original sample plane. Reset sets all three angles to zero.</td></tr>
+<tr><td>Fourth plot</td><td>Selects a material R/T/A spectrum, the Gaussian footprint at the bare-horn far-field start, or beam radius versus distance. The fourth export option follows this selection.</td></tr>
+</table>
+<p>When the aperture is unknown, the app assumes a square opening with area A<sub>ap</sub> = D²/2 and aperture efficiency η<sub>ap</sub> = 0.50. The nominal gain g<sub>dBi</sub> is referenced to an isotropic antenna. The gain-to-aperture relation gives:</p>
+<pre>G = 10^(g_dBi / 10)                    λ_center = c₀ / f_center
+G = 4π η_ap A_ap / λ_center²          D = λ_center sqrt(G / (2π η_ap))</pre>
+<p>The estimated D stays fixed across the low-to-high frequency sweep and is recomputed if the center frequency or nominal gain changes. This is a generic geometry estimate. It does not identify a particular calibrated horn, validate its gain pattern, or guarantee operation across the band. For real measurements, enter the measured or manufacturer-specified maximum opening dimension in <b>Known aperture (manual)</b>.</p>
+<h2 id="readout">2. Field regions and printed quantities</h2>
+<pre>c₀ = 299792458 m/s                     λ = c₀ / f
+R_RE = 0.62 sqrt(D³ / λ)                R_FF = 2 D² / λ
+Reactive near field:        0 ≤ r &lt; R_RE
+Radiating near field:       R_RE ≤ r &lt; R_FF     (Fresnel region)
+Far field:                  r ≥ R_FF           (Fraunhofer region)</pre>
+<table><tr><th>Printed quantity</th><th>Meaning</th></tr>
+<tr><td>Wavelength λ (mm)</td><td>Distance traveled by one wave cycle in free space. 1 mm = 0.001 m.</td></tr>
+<tr><td>D/λ</td><td>Electrical aperture size in wavelengths. The app flags D &lt; 3λ as a model caution; this is not an additional field boundary.</td></tr>
+<tr><td>r, R_RE, R_FF (m)</td><td>r is radial distance from the horn aperture. R_RE is the end of the reactive region; R_FF is the start of the conventional far field. Along the beam axis, propagation distance s equals r. “Sample center R” is classified by these limits.</td></tr>
+<tr><td>Incidence α (deg)</td><td>Acute angle between the incident beam axis and the sample normal, α = acos(|kᵢ·n|). A separate notice identifies illumination of the reverse face.</td></tr>
+<tr><td>Rx offset δ (deg)</td><td>Angular separation from the predicted geometric path to the direction from sample center to Rx. In reflection it uses the specular ray; in transmission it uses the straight-through ray. It is not received power or a pointing-loss estimate.</td></tr>
+<tr><td>w at actual R / at R_FF (cm)</td><td>Gaussian 1/e² intensity radius measured perpendicular to the beam. The footprint on the tilted sample is generally elliptical. This radius is not a diameter.</td></tr>
+<tr><td>Intercepted (%) / η</td><td>Fraction of total incident Gaussian beam power intercepted by the rectangular sample. Includes beam tails within the sample. It does not represent reflection, transmission, absorption, RCS, or the fraction received by Rx.</td></tr>
+<tr><td>Lens waist position and radius</td><td>Position s_focus from the Tx aperture at which the ideal lens-model beam radius is smallest, and that radius w_min. A waist upstream of the lens is a virtual/upstream extrapolation.</td></tr>
+<tr><td>“At R_FF” comparison</td><td>Identical sample size and orientation hypothetically centered at R_FF on the Tx axis. Actual sample stays at R. Solid orange contour: footprint there; dashed red contour: footprint at actual R. Magenta rectangle: sample.</td></tr>
+<tr><td>Intensity / on-axis intensity</td><td>Each heat map independently normalizes its peak to 1. Equal colors between maps do not imply equal absolute irradiance.</td></tr>
+<tr><td>1/e² contour (86.5% power)</td><td>Intensity at the boundary is e⁻² ≈ 13.53% of peak. The enclosed fraction of the entire Gaussian is 1 − e⁻² ≈ 86.47%. A Gaussian has no first-null main-lobe boundary.</td></tr>
+</table>
+<p class="note">The region formulas are approximate bare-horn aperture criteria, even with lenses enabled. A lens does not change this reference R_FF; the horn-plus-lens system requires its own illumination and wavefront analysis. No reactive electromagnetic fields are solved.</p>
+<p>The field-region plot evaluates these formulas at 240 uniformly spaced frequencies from the selected low endpoint to the high endpoint, inclusive. Geometry, footprints, the beam-radius plot and single-frequency readouts use f = f<sub>center</sub>.</p>
+<h2 id="beam">3. Gaussian beam and power interception</h2>
+<pre>w₀ = 0.425 D                          z_R = π w₀² / λ
+w(s) = w₀ sqrt(1 + (s/z_R)²)           [without lens]
+I(r_perp,s) / I(0,s) = exp(−2 r_perp² / w(s)²)
+I(0,s) = 2 P_beam / (π w(s)²)          [if total beam power P_beam is known]
+
+q_in = ℓ + i z_R                      q_after = 1 / (1/q_in − 1/F)
+s_focus = ℓ − Re(q_after)              z_R,out = Im(q_after)
+w_min = sqrt(λ z_R,out / π)
+w(s) = w_min sqrt(1 + ((s−s_focus)/z_R,out)²), for s &gt; ℓ
+
+B = [u_hatᵀ; v_hatᵀ]                  M = B (I₃ − kᵢ kᵢᵀ) Bᵀ
+r_perp² = [u v] M [u v]ᵀ
+η = ∬_sample {2 |kᵢ·n| / (π w²)} exp(−2 [u v] M [u v]ᵀ / w²) du dv
+Intercepted percentage = 100 η
+
+At zero sample rotation:
+η = erf(W cos(θ)/(sqrt(2) w)) × erf(H/(sqrt(2) w))</pre>
+<p>w₀ is the assumed waist at the horn aperture, not a measured pattern. z_R is the Rayleigh range. s is distance along the Tx beam. q is the complex Gaussian beam parameter; i = √−1, Re and Im mean real and imaginary parts. P_beam is total beam power, not an input used for these normalized images. r_perp is distance perpendicular to the beam axis. u and v (m) are sample-local coordinates, u_hat and v_hat are their unit vectors, B maps sample coordinates into space, M is the two-dimensional projection metric, I₃ is the identity matrix, and erf is the Gaussian error function. The integral is over −W/2 ≤ u ≤ W/2 and −H/2 ≤ v ≤ H/2.</p>
+<p>The footprint freezes w at the plane center, neglecting changes across a tilted sample. At R = 0 it illustrates the Gaussian launch plane with w(0) = w₀; an ideal lens is inactive when ℓ ≥ R. This limiting geometry does not model electromagnetic contact coupling. Estimates are suppressed for |kᵢ·n| &lt; 0.05 and flagged at incidence above 70°. Aperture clipping, lens aberrations, diffraction, anisotropic response and finite-sample polarization coupling are not calculated by the Gaussian footprint. The separate isotropic slab calculation is described below.</p>
+<h3 id="diagnostics">Gaussian illumination diagnostics</h3>
+<pre>q_beam(sample) = R + i z_R                         [no active lens]
+q_beam(sample) = q_after + R - ℓ                   [active lens before sample]
+1 / R_wave = Re(1 / q_beam(sample))
+θ_div ≈ λ / (π w_active)                          [radians; half-angle]
+
+ρ²(u,v) = [u v] M [u v]ᵀ
+Δφ_max = (k₀ / 2) |1/R_wave| max_sample ρ²         [radians]
+E_boundary,max / E_axis = exp(−min_boundary ρ² / w_sample²)
+Boundary field (dB) = −20 min_boundary ρ² / (ln(10) w_sample²)
+
+Exact spherical reference: Δφ_sphere = (2π/λ)(sqrt(R_wave² + a²) − |R_wave|)</pre>
+<p><strong>R_wave</strong> is the signed local wavefront curvature radius; it is infinite at a Gaussian waist, so curvature phase approaches zero. <strong>w_active</strong> is the launch waist without a lens, or the outgoing lens-transformed waist. <strong>θ_div</strong> is the paraxial divergence half-angle, not an antenna half-power beamwidth. Large divergence also limits the single-angle paraxial approximation. The traditional length-valued Gaussian <strong>q_beam</strong> differs from the dimensionless normal propagation <strong>q = k_z/k₀</strong> used in retrieval.</p>
+<p>The quadratic phase is measured relative to the center tangent plane, excluding the linear incidence phase. For the rotated rectangle, maximum ρ² occurs at a corner. The boundary-field calculation minimizes the projected quadratic metric along each of the four finite edges, including interior edge minima; it therefore reports the <em>strongest</em> boundary field. Field dB uses 20 log₁₀(E/E_axis), not 10 log₁₀ of field. These estimates freeze the beam width and curvature at the sample center, consistent with the existing footprint approximation. They are unavailable near grazing. At R = 0 they describe an idealized launch plane.</p>
+<p class="note"><strong>Engineering guidance:</strong> phase variation ≤ 22.5° and boundary field ≤ −20 dB can guide a setup review. They are not accuracy guarantees or standards-compliance tests. Bare-horn R_FF = 2D²/λ does not guarantee a flat wavefront over an arbitrarily large sample. Illumination warnings remain separate from numerical retrieval validity, and do not correct measured S-parameters.</p>
+<p>The exact spherical formula is exported as a separate geometric reference, not substituted for Gaussian quadratic phase. At 10 GHz, |R_wave| = 1 m and a = 100 mm it gives approximately 59.9°; the quadratic approximation gives approximately 60.0°. All diagnostic values, their assumptions and the setup snapshot are included in plot bundles. Receiver offset δ retains the reflection/transmission geometry definition below.</p>
+<p>See the supplied oblique-incidence note, pp. 8-9, and <a href="https://doi.org/10.1155/2015/657254">Fenner and Rothwell's curved-wavefront study</a>. That study concerns a specific conductor-backed reflection-only method; effects depend on the measurement model and material.</p>
+<h2 id="rotation">4. Geometry, rotation and polarization</h2>
+<pre>Sample center = (0,0,0)               Tx = −R kᵢ;  Rx = R k_Rx
+kᵢ = (cos θ, sin θ, 0)
+k_Rx = (−cos θ, sin θ, 0) in reflection, or kᵢ in transmission
+
+Q = Rz(γ) Ry(β) Rx(ρ)
+n = Q (−1,0,0)ᵀ                      u_hat = Q (0,1,0)ᵀ
+v_hat = Q (0,0,1)ᵀ                    k_spec = kᵢ − 2(kᵢ·n)n
+k_path = k_spec (reflection), or kᵢ (transmission)
+α = acos(|kᵢ·n|)                      δ = acos(k_path·k_Rx)
+e_TE = normalize(kᵢ × n)              e_TM = e_TE × kᵢ
+E_hat = cos(ψ)e_TE + sin(ψ)e_TM
+
+Rx(a) = [1 0 0; 0 cos(a) −sin(a); 0 sin(a) cos(a)]
+Ry(a) = [cos(a) 0 sin(a); 0 1 0; −sin(a) 0 cos(a)]
+Rz(a) = [cos(a) −sin(a) 0; sin(a) cos(a) 0; 0 0 1]</pre>
+<p>Here Rx(a) denotes an x-axis rotation matrix, while “Rx horn” denotes the receiver. kᵢ, k_Rx, k_spec, k_path, n and E_hat are unit vectors. The horn orientations define kᵢ and k_Rx even at R = 0, so incidence and receiver offset remain defined. Dot (·) is scalar product and × is vector cross product. The actual E arrow is drawn at an arbitrary scale. At normal incidence e_TE = v_hat. Transmission geometry draws a straight external path. The slab response includes refraction through its normal wave number and multiple reflections, but the emerging beam's lateral displacement is not drawn.</p>
+<h2 id="material">5. Material presets and constitutive properties</h2>
+<p>The former measured-data workflow has been replaced by the <b>Material</b> tab. It automatically simulates the same sample in both reflection and transmission geometries. The model is a homogeneous, isotropic, passive slab between two air half-spaces, with coherent internal reflections. It does not acquire measurements.</p>
+<table><tr><th>Preset</th><th>Definition</th></tr>
+<tr><td>Perfect conductor (PEC)</td><td>Opaque ideal boundary: reflected power 100%, transmitted power 0%, absorbed power 0%. Constitutive and thickness controls are disabled because this is an ideal boundary, not a large finite conductivity.</td></tr>
+<tr><td>Metal (finite conductivity)</td><td>Illustrative finite conductor: ε′ = 1, μ′ = 1, σ = 5.8×10⁷ S/m, d = 1 mm. Finite conductivity allows small absorption and, for sufficiently thin slabs, transmission. This is not a validated metal-dispersion dataset.</td></tr>
+<tr><td>Lossy absorber (example)</td><td>Illustrative electric and magnetic loss: ε′ = 4, ε″ = 1.2, μ′ = 1.8, μ″ = 0.5, σ = 0.02 S/m, d = 10 mm. It is not a perfect absorber; mismatch can still cause reflection.</td></tr>
+<tr><td>Lossless dielectric</td><td>ε′ = 4, μ′ = 1, no losses, d = 5 mm. Internal reflections cause frequency-dependent reflection/transmission even though absorption is zero.</td></tr>
+<tr><td>Air / vacuum</td><td>ε′ = μ′ = 1 and no losses: R = 0, T = 1, A = 0.</td></tr>
+<tr><td>Custom material</td><td>Edit the properties directly. Editing any non-PEC preset automatically switches the selection to Custom while retaining all the other values.</td></tr></table>
+<table><tr><th>Material input</th><th>Meaning / units</th></tr>
+<tr><td>ε′: relative permittivity, real</td><td>Electric energy-storage response relative to vacuum; dimensionless and positive in this app.</td></tr>
+<tr><td>ε″: dielectric loss, positive</td><td>Dimensionless electric loss excluding the explicit conductivity term. With the app's exp(+jωt) convention, the effective permittivity has a negative imaginary part.</td></tr>
+<tr><td>μ′: relative permeability, real</td><td>Magnetic energy-storage response relative to vacuum; dimensionless and positive in this app.</td></tr>
+<tr><td>μ″: magnetic loss, positive</td><td>Dimensionless magnetic loss. The complex relative permeability is μ′ − jμ″.</td></tr>
+<tr><td>σ: conductivity (S/m)</td><td>Electrical conduction loss. Do not confuse conductivity σ with radar cross section σ_RCS, whose units are m². Conductivity is nonnegative.</td></tr>
+<tr><td>d: thickness (mm)</td><td>Normal separation of the slab's two parallel faces. This is distinct from width W and height H. For a finite material, d = 0 gives no slab: R = 0, T = 1. PEC remains an opaque ideal boundary and ignores thickness.</td></tr></table>
+<pre>Time convention: exp(+jωt), where j² = −1
+ω = 2πf                   ε₀ = 8.8541878128 × 10⁻¹² F/m
+ε_r,eff = ε′ − j[ε″ + σ/(ωε₀)]
+μ_r = μ′ − jμ″
+ε = ε₀ ε_r,eff            μ = μ₀ μ_r
+</pre>
+<p>ε and μ are absolute permittivity (F/m) and permeability (H/m), and μ₀ is vacuum permeability (approximately 4π×10⁻⁷ H/m). The solver uses dimensionless admittances and relative properties. If supplied dielectric loss already includes conduction, set σ = 0 to avoid counting that loss twice. The frequency plot holds ε′, ε″, μ′, μ″ and σ fixed; only the conduction contribution to ε_r,eff varies as 1/f. This is an illustrative limited-band model, not a causal fitted material-dispersion model. Negative-index, anisotropic and active/gain media are outside its scope.</p>
+<h2 id="slab">6. Reflection, transmission and absorption equations</h2>
+<pre>k₀ = 2π/λ                        c = cos(α)
+q = sqrt(ε_r,eff μ_r − sin²α)      δ = k₀ q d
+Choose passive branch Im(q) ≤ 0; if real, choose q ≥ 0.
+p = exp(−jδ)                     [single-pass propagation]
+
+Normalized tangential wave admittances:
+TE: Y₀ = c,      Y₁ = q/μ_r
+TM: Y₀ = 1/c,    Y₁ = ε_r,eff/q
+
+For either polarization:
+r₀₁ = (Y₀ − Y₁)/(Y₀ + Y₁)
+r = r₀₁ (1 − p²)/(1 − r₀₁² p²)
+t = (1 − r₀₁²) p/(1 − r₀₁² p²)
+R = |r|²                         T = |t|²
+A = 1 − R − T
+</pre>
+<p>Y₀ and Y₁ are wave admittances normalized to free-space admittance, outside and inside the slab. The two exterior media are identical, so no extra transmitted-power admittance factor is required. q is normalized normal wave number; δ is normal phase thickness in radians; d must be in meters in these equations. The implementation evaluates equivalent scaled formulas to avoid exponential overflow for thick conductors and uses the analytic limit at q = 0. Exactly grazing incidence is marked unavailable because normal incident power vanishes.</p>
+<p>The field coefficients r and t refer to <b>tangential electric fields</b>. The TM reflected-amplitude sign may therefore differ from textbook conventions using a reflected TM basis pointing in the opposite direction. Powers are independent of that convention. Transmission phase is measured between the two slab faces; it includes propagation and is <b>not</b> divided by an empty-air reference. Phase is shown as NaN when a coefficient's magnitude is negligible.</p>
+<pre>Polarization weights: w_TE = cos²ψ, w_TM = sin²ψ
+R_mix = w_TE R_TE + w_TM R_TM
+T_mix = w_TE T_TE + w_TM T_TM
+A_mix = w_TE A_TE + w_TM A_TM
+R_mix + T_mix + A_mix = 1
+
+Transmission insertion loss IL = −10 log10(T_mix) dB
+Reflection return loss RL = −10 log10(R_mix) dB
+Phase of a field coefficient = arg(r or t) × 180/π degrees
+</pre>
+<p>TE and TM are orthogonal, so their powers add with the stated weights. There is no single mixed-polarization phase in the readout; both phases are printed separately. R = 0 gives infinite return loss and T = 0 gives infinite insertion loss. These are mathematical limits, not numerical failures. A high return loss means little reflection; a high insertion loss can result from reflection, absorption, or both.</p>
+<table><tr><th>Material-response readout</th><th>Meaning</th></tr>
+<tr><td>Reflected R, transmitted T, absorbed A (%)</td><td>Fractions of the power incident on the material. Unlike the geometry input R (meters), these R values are dimensionless reflectance. All three are available in both geometry modes.</td></tr>
+<tr><td>TE / TM rows</td><td>Response for pure TE and pure TM illumination at the current frequency, material properties, thickness and rotated-sample incidence.</td></tr>
+<tr><td>Effective ε and μ</td><td>Complex relative properties actually used in the calculation, including the frequency-dependent conductivity contribution. Printed with the exp(+jωt) sign convention.</td></tr>
+<tr><td>Whole-beam budget</td><td>Approximate fractions of the total Gaussian beam: ηR reflected, ηT transmitted <em>through the sample</em>, ηA absorbed, and 1−η missing the sample. Here η is geometric interception. The four fractions sum to one; light/energy that misses the sample is not counted as through-sample transmission.</td></tr>
+<tr><td>Material R/T/A frequency plot</td><td>Simulated fractions at 180 uniformly spaced frequencies from low to high, including both endpoints. Incidence, thickness, polarization and constitutive inputs stay fixed. The dotted line marks the selected center frequency.</td></tr>
+</table>
+<p class="note">Neither R/T/A nor the whole-beam budget is received horn power. Rx alignment, its aperture/mode overlap, finite sample diffraction, edge effects, surface roughness and coherent bypass around the sample are not solved. The slab calculation uses a local plane wave at the center incidence angle; focused beams can contain a spread of angles. A tilted parallel slab produces a parallel emerging beam with lateral displacement, which is not drawn. The geometry arrows show directions with material fractions as labels, not field amplitudes. The drawn fiber stripes remain geometric decoration: the material model is isotropic.</p>
+<h2 id="rcs">7. Approximate specular flat-plate RCS scale</h2>
+<p>Reflection mode retains an explicitly approximate <b>specular</b> RCS scale, derived from a uniformly illuminated large rectangular plate and scaled by the modeled reflectance:</p>
+<pre>Area = W H
+σ_RCS,spec ≈ (4π Area² / λ²) cos²α R_mix
+σ_RCS,spec[dBsm] = 10 log10(σ_RCS,spec / 1 m²)
+</pre>
+<p>This is a scalar Fresnel-scaled plate approximation, not measured RCS or a general full-wave bistatic prediction. It assumes a large, flat sample, uniform plane-wave illumination and far-field observation in the specular direction. The app prints the angular offset to the fixed Rx; when Rx is not in the specular direction, the displayed value is <b>not</b> RCS toward Rx. Near-field/lens configurations are flagged. Arbitrary-angle scattering, diffraction, vector polarization factors and receiver coupling need a more complete solver. Transmission mode does not infer forward-scatter RCS from T.</p>
+<h2 id="workflow">8. Using the material model</h2>
+<ol><li>Select Reflection or Transmission and set the low, center and high frequencies in <b>Geometry</b>, along with horn geometry, sample dimensions, rotation and E polarization.</li><li>Open <b>Material</b>. Choose PEC, finite-conductivity metal, an example absorber, lossless dielectric, air, or Custom.</li><li>Edit ε′, ε″, μ′, μ″, conductivity and thickness as appropriate. The Material response tab updates automatically. To edit a PEC-like material, select finite metal or Custom.</li><li>Choose <b>Material R / T / A vs frequency</b> in the fourth plot to compare the power fractions across the selected band. The footprint and beam-radius views remain available.</li><li>Use <b>Export simulated result (CSV)</b> to save geometry, frequency settings, material properties, mixed/TE/TM power fractions, phases and model notes for the center frequency. The plot export control saves the graph PNG, a same-stem parameter CSV and a wrapped parameter-table PNG together. The CSV includes all three frequencies in Hz, the other controls, derived values, units, definitions and camera view at export.</li></ol>
+<h2>9. Angle acquisition planner and scalar S-parameter inverse</h2>
+<p>The <b>Symbolic tensors &amp; S-parameters</b> workspace receives live geometry, incidence, rotation, frequency and thickness from this setup. Use its setup-copy button to seed one setting, then specify the angular/azimuth sweeps, known orientations, polarization channels and frequency points. The planner distinguishes incidence sweeps from receiver observation arcs and counts geometry settings, traces and complex frequency samples. Matrices remain symbolic; acquisition counts alone do not establish a unique tensor inverse.</p>
+<pre>N_geometry = N_angle N_azimuth N_orientation
+N_trace = N_geometry N_polarization N_blocks
+N_complex = N_trace N_frequency</pre>
+<p>The <b>S-parameters to epsilon / mu</b> tab numerically retrieves scalar isotropic properties using calibrated complex S11/S21 and known normal thickness. NRW supports normal or oblique TE/TM incidence; NIST and New non-iterative remain normal-only. See <a href="Retrieval_method.html">the PDF method guide</a> for the free-space NRW, NIST iterative and New non-iterative equations, comparison tables, advantage/disadvantage bullets, phase branches and invalidity checks. NIST and New non-iterative fix mu_r = 1 as an explicit nonmagnetic assumption; NRW retrieves both scalars. The input can be a pair or imported four-channel data projected onto a reciprocal symmetric slab and checked against every raw channel. This calculation does not infer arbitrary-angle tensor components. Exported retrieval data preserve the signed imaginary values; graphs also display positive loss as minus the imaginary part.</p>
+<h2>References</h2><ul>
+<li><a href="https://www.mathworks.com/help/antenna/ug/field-analysis.html">MathWorks — Field Analysis</a>: field-region estimates.</li>
+<li><a href="https://radiojove.gsfc.nasa.gov/library/pubs/docs/SARA-2014_RJ/2014%20SARA%20Proceedings%20PDF.pdf#page=11">Jon Wallace, 2014 SARA Conference Proceedings, p. 10</a>: gain–aperture relation and typical pyramidal horn aperture efficiency.</li>
+<li><a href="https://www.rfspin.com/wp-content/uploads/2022/03/catalog_RFspin.pdf">RFspin — Manufacturer catalog</a>: examples of 15, 20 and 25 dBi nominal standard gain horns specified by waveguide band.</li>
+<li><a href="https://www.edmundoptics.com/knowledge-center/application-notes/lasers/gaussian-beam-propagation/">Edmund Optics — Gaussian Beam Propagation</a>: Gaussian conventions.</li>
+<li><a href="https://doc.comsol.com/6.4/doc/com.comsol.help.rf/rf_ug_theory.06.09.html">COMSOL — Frequency Domain</a>: passive constitutive-property sign convention.</li>
+<li><a href="https://doc.comsol.com/6.4/doc/com.comsol.help.roptics/roptics_ug_optics.6.73.html">COMSOL — Thin Dielectric Film Theory</a>: coherent slab reflections.</li>
+<li><a href="https://arxiv.org/abs/1603.02720">Byrnes — Multilayer Optical Calculations</a>: reflection/transmission power and absorption.</li>
+<li><a href="https://www.mathworks.com/help/antenna/ug/radar-cross-section-benchmarking.html">MathWorks — Radar Cross Section Benchmarking</a>: physical-optics flat-plate reference.</li></ul>
+</body></html>

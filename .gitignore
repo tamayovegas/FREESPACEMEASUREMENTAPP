@@ -1,0 +1,8 @@
+*.asv
+*.mat
+*.fig
+*.m~
+*.mlappinstall
+slprj/
+codegen/
+.DS_Store

@@ -2,7 +2,7 @@
 
 Plan free-space electromagnetic measurements in MATLAB and use calibrated reflection and transmission data to retrieve the material properties of a slab.
 
-[**Open in MATLAB Online**](https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&file=QuasiOpticalBistatic3D.m) · [**Download ZIP**](https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip) · [**View setup gallery**](https://tamayovegas.github.io/QuasiOpticalBistatic3D/#setups)
+[**Open in MATLAB Online**](https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&file=QuasiOpticalBistatic3D.m) · [**Download ZIP**](https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip) · [**Website**](https://tamayovegas.github.io/QuasiOpticalBistatic3D/)
 
 ![MATLAB simulation of straight-through transmission with Tx and Rx on opposite sides of a lossy slab. The app shows the beam footprint and radius with and without ideal focusing lenses.](docs/assets/transmission-with-lenses.png)
 

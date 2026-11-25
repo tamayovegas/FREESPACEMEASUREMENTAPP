@@ -1,31 +1,32 @@
-# Quasi-Optical 3D
+# Free Space Measurements
 
-Plan free-space electromagnetic measurements in MATLAB and use calibrated reflection and transmission data to retrieve the material properties of a slab.
+Plan microwave measurements of flat samples and retrieve material properties from calibrated reflection and transmission data in MATLAB.
 
 [**Open in MATLAB Online**](https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&file=QuasiOpticalBistatic3D.m) · [**Download ZIP**](https://github.com/tamayovegas/QuasiOpticalBistatic3D/archive/refs/heads/main.zip) · [**Website**](https://tamayovegas.github.io/QuasiOpticalBistatic3D/)
 
-![MATLAB simulation of straight-through transmission with Tx and Rx on opposite sides of a lossy slab. The app shows the beam footprint and radius with and without ideal focusing lenses.](docs/assets/transmission-with-lenses.png)
+![Free Space Measurements MATLAB app showing straight-through transmission, the sample footprint, and modeled beam radius.](docs/assets/transmission-with-lenses.png)
 
-*Straight-through transmission with ideal Tx/Rx focusing lenses. Simulated lossy slab at 10 GHz and 30° incidence.*
+*Simulated straight-through transmission with ideal focusing lenses at 10 GHz and 30° incidence.*
+
+## What it measures
+
+A vector network analyzer (VNA) records how a microwave signal changes in amplitude and phase when it reflects from or passes through a sample. The app simulates the setup and uses imported, calibrated data to estimate the complex relative permittivity and, with NRW, permeability of a homogeneous, isotropic slab in air.
 
 ## Quick start
 
-Open in MATLAB Online and sign in, or unzip the source and open the extracted folder in desktop MATLAB. From the project folder, run:
+1. Sign in using **Open in MATLAB Online**, or extract the ZIP and open its project folder in desktop MATLAB.
+2. Run `QuasiOpticalBistatic3D`. Open **Simulation** to compare straight-through transmission and bistatic reflection with and without ideal lenses.
+3. Open **S-parameters to epsilon / mu**, select **NRW** and **Paper benchmark**, then choose **Load synthetic example (TE + TM)** and **Calculate**. Compare the recovered values and reconstructed channels with the known synthetic inputs.
 
-```matlab
-QuasiOpticalBistatic3D
-```
+## How it works
 
-Select **Simulation** to choose a geometry. In straight-through transmission, the receiving horn sits beyond the sample. In bistatic reflection, separate transmitting and receiving horns sit on the incident side. Toggle **Ideal Tx/Rx focusing lenses** in **Geometry** and compare the beam footprint and radius.
+Impedance differences at the slab boundaries cause reflections. Propagation through the slab changes phase and amplitude. Permittivity describes the electric response, permeability describes the magnetic response, and the dielectric loss tangent is the ratio of the electric loss term to the real permittivity.
 
-## What you can do
+Import complex sample-face reflection and transmission with known normal thickness, incidence angle, and polarization. NRW supports fixed oblique TE or TM incidence. NIST iterative and the new non-iterative method require normal incidence and assume relative permeability is one. Experimental accuracy and MATLAB Online Basic compatibility remain unverified.
 
-- **Plan the setup.** Compare sample illumination with and without ideal lenses. Inspect beam radius, footprint, and receiver alignment before measuring.
-- **Simulate the response.** Set the sample thickness, material properties, frequency band, angle, and polarization. Explore reflected, transmitted, and absorbed power.
-- **Retrieve material properties.** Open **S-parameters to epsilon / mu**. Start with the built-in synthetic example or import calibrated complex sample-face data in CSV or Touchstone format. Review the retrieved scalar properties and reconstructed channels.
+[Measurement physics](https://tamayovegas.github.io/QuasiOpticalBistatic3D/#science) · [Retrieval guide](https://tamayovegas.github.io/QuasiOpticalBistatic3D/Retrieval_method.html) · [CSV template](SParameter_input_template.csv) · [Technical guide](docs/TECHNICAL_GUIDE.md) · [Validation](V10_validation.md)
 
-The numerical retrieval assumes a homogeneous, isotropic slab in air with known thickness and calibrated complex reflection and transmission at the sample faces. The examples are synthetic. Experimental accuracy and MATLAB Online Basic compatibility are still unverified. The desktop app targets MATLAB R2021a or later.
+## References
 
-## Documentation
-
-[Retrieval guide](https://tamayovegas.github.io/QuasiOpticalBistatic3D/Retrieval_method.html) · [Variables and equations](https://tamayovegas.github.io/QuasiOpticalBistatic3D/Variables_and_equations.html) · [Symbolic acquisition planner](https://tamayovegas.github.io/QuasiOpticalBistatic3D/SymbolicTensors.html) · [CSV input template](SParameter_input_template.csv) · [Technical guide and version notes](docs/TECHNICAL_GUIDE.md) · [Validation record](V10_validation.md)
+- **Ghodgaonkar, Varadan, and Varadan (1989).** The original IEEE paper used focused horns, thru-reflect-line (TRL) calibration, and time gating. It extracted dielectric properties from metal-backed reflection. The app uses paired reflection and transmission from a slab in air. [Original paper](https://doi.org/10.1109/19.32194)
+- **Baker-Jarvis et al. (2005).** NIST Technical Note 1536, §6.5 describes free-space measurements. The report also covers calibration and measurement uncertainty. [NIST Technical Note 1536](https://nvlpubs.nist.gov/nistpubs/Legacy/TN/nbstechnicalnote1536.pdf)

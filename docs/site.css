@@ -50,9 +50,24 @@ img { display: block; width: 100%; height: auto; background: #fff; }
 .workflow li::marker { color: #0b596b; font-weight: 750; }
 .workflow strong { display: block; }
 .model-note { padding: .8rem 1rem; border-left: 3px solid #237477; background: #e6f0f0; }
+.science-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.science-card { padding: clamp(1rem, 2.5vw, 1.5rem); border: 1px solid #d5dfe0; border-radius: .5rem; background: #fff; }
+.science-card > p, .science-block > p { margin-top: .75rem; }
+.science-block { margin-top: 1.75rem; }
+.equations { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.equations p { flex: 1 1 8rem; padding: .45rem .65rem; background: #e6f0f0; border-radius: .3rem; }
+.equations strong, .equations span { display: block; }
+.equations span, .equation-note { font-size: .9rem; }
+.methods { width: 100%; margin-block: .9rem; border-collapse: collapse; background: #fff; }
+.methods caption { margin-bottom: .35rem; text-align: left; color: #3b5360; }
+.methods th, .methods td { padding: .55rem .75rem; border: 1px solid #d5dfe0; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.methods thead { background: #e6f0f0; }
+.confidence, .references { max-width: 75ch; padding-left: 1.35rem; }
+.confidence li + li, .references li + li { margin-top: .6rem; }
 .guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35rem 2rem; margin: .85rem 0 0; padding-left: 1.15rem; }
 footer { background: #e6eeee; padding-block: 1rem; }
 footer .wrap { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
 @media (max-width: 46rem) {
-  .hero-layout, .pair, .workflow, .guides { grid-template-columns: minmax(0, 1fr); }
+  .hero-layout, .pair, .workflow, .guides, .science-grid { grid-template-columns: minmax(0, 1fr); }
+  .methods th, .methods td { padding: .4rem; font-size: .875rem; }
 }

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Plan free-space material measurements in MATLAB. Compare straight-through transmission and bistatic reflection, with and without focusing lenses.">
-  <title>Quasi-Optical 3D | Free-space material measurement</title>
+  <title>Free Space Measurements | Microwave material characterization</title>
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,16 +12,18 @@
   <header class="hero">
     <div class="wrap">
       <nav class="top-nav" aria-label="Main navigation">
-        <a class="brand" href="./">Quasi-Optical 3D</a>
+        <a class="brand" href="./">Free Space Measurements</a>
         <div class="nav-links">
           <a href="#setups">Setups</a>
           <a href="#workflow">Workflow</a>
+          <a href="#science">Science</a>
+          <a href="#references">References</a>
           <a href="#documentation">Guides</a>
         </div>
       </nav>
       <div class="hero-layout">
         <div>
-          <h1 id="main" tabindex="-1">Free-space material measurement</h1>
+          <h1 id="main" tabindex="-1">Free Space Measurements</h1>
           <p class="intro">Plan how a microwave beam reaches a sample. Compare transmission and reflection, then use calibrated S-parameters to retrieve material properties in MATLAB.</p>
           <div class="actions">
             <a class="button primary" href="https://matlab.mathworks.com/open/github/v1?repo=tamayovegas/QuasiOpticalBistatic3D&amp;file=QuasiOpticalBistatic3D.m">Open in MATLAB Online</a>
@@ -43,7 +45,7 @@
   <main class="wrap">
     <section class="section" id="setups" aria-labelledby="setups-heading">
       <h2 id="setups-heading">Compare the four setups</h2>
-      <p class="section-intro">All four MATLAB simulations use the same 10 mm lossy slab at 10 GHz, 30° incidence, and a 1.2 m horn-to-sample distance. The modeled beam radius at the sample is 23.0 cm without lenses and 15.1 cm with lenses. Select any screenshot to view it at full size.</p>
+      <p class="section-intro">All four MATLAB simulations use the same 10 mm lossy slab at 10 GHz, 30° incidence, and a 1.2 m horn-to-sample distance. The ideal lenses reduce the modeled beam radius at the sample from 23.0 cm to 15.1 cm. This concentrates the illumination on the sample while leaving the slab properties fixed. Select any screenshot to view it at full size.</p>
 
       <div class="setup-group">
         <h3>Straight-through transmission</h3>
@@ -89,10 +91,69 @@
       <ol class="workflow">
         <li><strong>Choose the geometry.</strong> Set the frequency band, sample size and thickness, incidence angle, and polarization.</li>
         <li><strong>Check the illumination.</strong> Compare the beam footprint and radius with and without ideal lenses. Check receiver alignment.</li>
-        <li><strong>Import calibrated data.</strong> Open <em>S-parameters to epsilon / mu</em> and load complex sample-face reflection and transmission from CSV or Touchstone. You can also start with a synthetic example.</li>
-        <li><strong>Review the retrieval.</strong> Inspect the recovered scalar properties and compare the reconstructed channels with the inputs.</li>
+        <li><strong>Import calibrated data.</strong> Open <em>S-parameters to epsilon / mu</em> and load complex sample-face reflection and transmission from CSV or Touchstone. To try the workflow with known inputs, select <em>NRW</em> and <em>Paper benchmark</em>, then choose <em>Load synthetic example (TE + TM)</em> and <em>Calculate</em>.</li>
+        <li><strong>Review the retrieval.</strong> Inspect the recovered scalar properties and compare the reconstructed channels with the inputs. The retrieval guide describes the built-in 6 GHz synthetic benchmark and its known material values.</li>
       </ol>
       <p class="model-note">Retrieval assumes a homogeneous, isotropic slab in air and known normal thickness. Experimental accuracy against calibrated reference measurements remains unverified.</p>
+    </section>
+
+    <section class="section" id="science" aria-labelledby="science-heading">
+      <h2 id="science-heading">The physics of a free-space measurement</h2>
+      <div class="science-grid">
+        <article class="science-card">
+          <h3>What the instrument measures</h3>
+          <p>A vector network analyzer (VNA) launches a microwave signal and measures complex ratios of outgoing to incident waves. Each S-parameter records both amplitude and phase as a function of frequency.</p>
+          <p>Calibrate the fixture and, where needed, de-embed the remaining path to refer the data to the slab faces. This accounts for effects such as propagation delay between the VNA ports and the sample. Use time gating before import if delayed echoes can be separated from the main response.</p>
+          <p>With two separate horns in a bistatic reflection setup, the reflected path can appear as raw VNA S<sub>21</sub>. After calibration and channel mapping, that measurement supplies the sample reflection <var>r</var>. A through-path measurement supplies sample transmission <var>t</var>. The app reads the sample reflection and transmission as S<sub>11</sub> and S<sub>21</sub>, respectively.</p>
+        </article>
+        <article class="science-card">
+          <h3>How the slab changes the wave</h3>
+          <p>Complex relative permittivity ε<sub>r</sub> describes the electric response. Complex relative permeability μ<sub>r</sub> describes the magnetic response. The imaginary terms represent loss under the app’s time convention, e<sup>+jωt</sup>. For ε<sub>r</sub> = ε′ − jε″, the dielectric loss tangent is tan δ = ε″/ε′. Conductivity can contribute to the effective electric loss inferred from the scattering data.</p>
+          <p>Impedance mismatch at the air–slab interfaces produces reflection. Within the slab, propagation changes phase and attenuates the wave in a lossy material. Repeated internal reflections also change the measured response. At oblique incidence, the interface responses depend on polarization.</p>
+          <div class="equations" aria-label="Power fractions for the app’s slab model">
+            <p><strong><var>R</var> = |<var>r</var>|<sup>2</sup></strong><span>Reflected power fraction</span></p>
+            <p><strong><var>T</var> = |<var>t</var>|<sup>2</sup></strong><span>Transmitted power fraction</span></p>
+            <p><strong><var>A</var> = 1 − <var>R</var> − <var>T</var></strong><span>Absorbed power fraction</span></p>
+          </div>
+          <p class="equation-note">Here <var>r</var> and <var>t</var> are the complex slab reflection and transmission amplitudes for the same polarization in air on both sides. The fractions refer to incident power in the plane-wave slab model.</p>
+        </article>
+      </div>
+
+      <div class="science-block">
+        <h3>Retrieve the material properties</h3>
+        <p>The app uses calibrated complex reflection and transmission and the measured thickness normal to the slab faces. Each imported spectrum represents one fixed incidence angle and one polarization.</p>
+        <table class="methods">
+          <caption>Retrieval methods implemented in the app</caption>
+          <thead>
+            <tr><th scope="col">Method</th><th scope="col">Incidence</th><th scope="col">Properties</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Nicolson–Ross–Weir (NRW)</th><td>Normal or fixed oblique, with TE or TM specified</td><td>Retrieves scalar ε<sub>r</sub> and μ<sub>r</sub></td></tr>
+            <tr><th scope="row">NIST iterative</th><td>Normal</td><td>Retrieves ε<sub>r</sub> iteratively, with μ<sub>r</sub> = 1 assumed</td></tr>
+            <tr><th scope="row">New non-iterative</th><td>Normal</td><td>Retrieves ε<sub>r</sub> from propagation, with μ<sub>r</sub> = 1 assumed</td></tr>
+          </tbody>
+        </table>
+        <p>Different propagation phases within the slab can produce the same measured phase, which repeats every 2π. Use independent knowledge of the sample or its expected dispersion to choose a physically plausible branch. Compare the reconstructed complex channels with the input to check the fit. Different branches can reproduce the same data.</p>
+      </div>
+
+      <div class="science-block">
+        <h3>What affects confidence</h3>
+        <ul class="confidence">
+          <li><strong>Alignment and beam footprint.</strong> Place the receiver on the through or specular path. Use the footprint to check whether the illuminated beam approaches the sample edges, where spillover and diffraction can affect the measurement.</li>
+          <li><strong>Unwanted reflections.</strong> The horns, fixture, and room can add echoes. Calibration and, when appropriate, time gating are laboratory steps performed before importing data.</li>
+          <li><strong>Weak transmission.</strong> Near the noise floor, uncertainty in transmitted amplitude and phase can make the inverse calculation unreliable.</li>
+          <li><strong>Thickness uncertainty.</strong> The inferred propagation constant depends on thickness. Measure it independently and include its uncertainty when reporting material properties.</li>
+        </ul>
+        <p class="model-note">The gallery illustrates simulated illumination and geometry. The software has been checked with synthetic data. Experimental accuracy against calibrated reference measurements remains unverified.</p>
+      </div>
+    </section>
+
+    <section class="section" id="references" aria-labelledby="references-heading">
+      <h2 id="references-heading">References</h2>
+      <ol class="references">
+        <li><strong>Ghodgaonkar, Varadan, and Varadan (1989).</strong> <cite>A Free-Space Method for Measurement of Dielectric Constants and Loss Tangents at Microwave Frequencies.</cite> The study used spot-focusing horns, thru-reflect-line calibration, and time gating. It extracted dielectric properties from complex reflection with a metal plate behind the sample. The app uses paired reflection and transmission from a slab in air. <a href="https://doi.org/10.1109/19.32194">Original IEEE paper</a></li>
+        <li><strong>Baker-Jarvis et al. (2005).</strong> <cite>Measuring the Permittivity and Permeability of Lossy Materials.</cite> Section 6.5 of NIST Technical Note 1536 describes free-space setups. The report places those methods in a wider discussion of permittivity and permeability measurement, calibration, and uncertainty. <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/TN/nbstechnicalnote1536.pdf">NIST Technical Note 1536 (PDF)</a> · <a href="https://www.nist.gov/publications/measuring-permittivity-and-permeability-lossy-materials-solids-liquids-metals-and?pub_id=31854">NIST publication record</a></li>
+      </ol>
     </section>
 
     <section class="section" id="documentation" aria-labelledby="guides-heading">
@@ -109,7 +170,7 @@
 
   <footer>
     <div class="wrap">
-      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">Quasi-Optical 3D on GitHub</a>
+      <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D">Free Space Measurements on GitHub</a>
       <a href="https://github.com/tamayovegas/QuasiOpticalBistatic3D/blob/main/LICENSE">MIT license</a>
     </div>
   </footer>

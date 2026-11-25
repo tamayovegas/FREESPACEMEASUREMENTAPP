@@ -4,12 +4,12 @@ function fig = QuasiOpticalBistatic3D
 % MATLAB R2021a+; no additional toolboxes. See README.md for assumptions.
     blue = [0.12 0.40 0.76]; red = [0.82 0.20 0.17];
     dark = [0.14 0.24 0.34]; green = [0.08 0.55 0.38];
-    fig = uifigure('Name','Quasi-Optical 3D | Reflection, transmission and material response', ...
+    fig = uifigure('Name','Free Space Measurements | Reflection, transmission and material response', ...
         'Position',[40 40 1580 980],'Color','white','Tag','QuasiOpticalBistatic3D');
     root = uigridlayout(fig,[2 2]);
     root.RowHeight = {38,'1x'}; root.ColumnWidth = {350,'1x'};
     root.Padding = [10 8 10 8]; root.RowSpacing = 5;
-    header = uilabel(root,'Text','QUASI-OPTICAL 3D | Reflection / transmission | Material response & tensors', ...
+    header = uilabel(root,'Text','Free Space Measurements | Reflection / transmission | Material response & tensors', ...
         'FontWeight','bold','FontSize',18,'FontColor',dark);
     header.Layout.Column = [1 2];
     panel = uipanel(root,'Title','Simulation configuration','Scrollable','on','Tag','simulationControls');
@@ -318,7 +318,7 @@ function fig = QuasiOpticalBistatic3D
     end
 
     function openGuide()
-        guideFigure=uifigure('Name','Quasi-Optical 3D: variables and equations', ...
+        guideFigure=uifigure('Name','Free Space Measurements | Variables and equations', ...
             'Position',[120 80 1050 800],'Tag','QuasiOpticalGuide');
         guideGrid=uigridlayout(guideFigure,[1 1]); guideGrid.Padding=[0 0 0 0];
         uihtml(guideGrid,'HTMLSource',guidePath);

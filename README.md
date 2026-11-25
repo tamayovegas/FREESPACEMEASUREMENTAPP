@@ -28,4 +28,4 @@ The numerical retrieval assumes a homogeneous, isotropic slab in air with known 
 
 ## Documentation
 
-[Retrieval guide](Retrieval_method.html) · [Variables and equations](Variables_and_equations.html) · [Symbolic acquisition planner](https://tamayovegas.github.io/QuasiOpticalBistatic3D/SymbolicTensors.html) · [CSV input template](SParameter_input_template.csv) · [Technical guide and version notes](docs/TECHNICAL_GUIDE.md) · [Validation record](V10_validation.md)
+[Retrieval guide](https://tamayovegas.github.io/QuasiOpticalBistatic3D/Retrieval_method.html) · [Variables and equations](https://tamayovegas.github.io/QuasiOpticalBistatic3D/Variables_and_equations.html) · [Symbolic acquisition planner](https://tamayovegas.github.io/QuasiOpticalBistatic3D/SymbolicTensors.html) · [CSV input template](SParameter_input_template.csv) · [Technical guide and version notes](docs/TECHNICAL_GUIDE.md) · [Validation record](V10_validation.md)
